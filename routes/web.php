@@ -40,6 +40,11 @@ Route::get('email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'
 
 Route::get('/verify-code', [CodeVerificationController::class, 'showForm'])->name('verify.code.form');
 Route::post('/verify-code', [CodeVerificationController::class, 'verify'])->name('verify.code');
+
+Route::controller(\App\Http\Controllers\SocialiteAuthController::class)->group(function () {
+    route::get('/auth/{provider}', 'redirect')->name('oauth.redirect');
+    route::get('/auth/{provider}/callback', 'authenticate')->name('auth.callback');
+});
     
 
 require __DIR__.'/auth.php';
