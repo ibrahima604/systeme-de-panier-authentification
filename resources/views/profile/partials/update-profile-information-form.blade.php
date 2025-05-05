@@ -32,6 +32,15 @@
             <x-text-input id="tel" name="tel" type="number" class="mt-1 block w-full" :value="old('tel', $user->tel)" required autofocus autocomplete="tel" />
             <x-input-error class="mt-2" :messages="$errors->get('tel')" />
         </div>
+         <!-- Sexe -->
+         <div>
+            <x-input-label for="sexe" :value="__('Sexe')" />
+            <select id="sexe" name="sexe" class="mt-1 block w-full" required>
+                <option value="M" {{ old('sexe', $user->sexe) == 'M' ? 'selected' : '' }}>{{ __('Masculin') }}</option>
+                <option value="F" {{ old('sexe', $user->sexe) == 'F' ? 'selected' : '' }}>{{ __('Feminin') }}</option>
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('sexe')" />
+        </div>
 
         <div>
             <x-input-label for="email" :value="__('Email')" />

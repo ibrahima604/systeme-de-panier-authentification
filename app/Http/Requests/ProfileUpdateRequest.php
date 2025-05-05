@@ -16,8 +16,11 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'nom' => ['required', 'string', 'max:255'], // Validation pour le champ "Nom"
+            'prenom' => ['required', 'string', 'max:255'], // Validation pour le champ "Prenom"
+            'tel' => ['required', 'string', 'max:20'], // Validation pour le champ "Tel", par exemple, un maximum de 20 caractères
+            'sexe' => ['required', 'in:M,F'], // Validation pour le champ "Sexe" (M ou F)
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)], // Validation pour le champ "Email"
         ];
     }
 }
