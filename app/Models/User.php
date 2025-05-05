@@ -23,6 +23,7 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         'password',
         'prenom',
         'tel',
+        'sexe',
     ];
 
     /**
