@@ -45,6 +45,7 @@ Route::controller(\App\Http\Controllers\SocialiteAuthController::class)->group(f
     route::get('/auth/{provider}', 'redirect')->name('oauth.redirect');
     route::get('/auth/{provider}/callback', 'authenticate')->name('auth.callback');
 });
+Route::get('/panier', [\App\Http\Controllers\CartController::class, 'index'])->name('panier.index');
     
 
 require __DIR__.'/auth.php';
