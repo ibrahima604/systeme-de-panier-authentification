@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-
+    
         // Création de l'utilisateur
         $user = User::create([
             'nom' => $request->nom,
@@ -49,20 +49,27 @@ class RegisteredUserController extends Controller
             'sexe' => $request->sexe,
             'password' => Hash::make($request->password),
         ]);
-
+    
         // Envoi de la notification de vérification de l'email
         $user->sendEmailVerificationNotification();
-
+    
         // Authentification automatique après inscription
         Auth::login($user);
-
+    
+        // Vérifie si l'email correspond à celui de l'administrateur
+        if ($user->email === env('ADMIN_EMAIL')) {
+            // Si c'est l'admin, redirige vers son tableau de bord
+            return redirect()->route('admin.dashboard')->with('success', 'Bienvenue administrateur.');
+        }
+    
         // Vérifier si l'utilisateur a confirmé son email
         if ($user->hasVerifiedEmail()) {
-            // Si l'email est déjà vérifié, rediriger vers la page d'accueil ou tableau de bord
+            // Si l'email est déjà vérifié, rediriger vers la page d'accueil ou tableau de bord des clients
             return redirect(RouteServiceProvider::HOME);
         } else {
             // Si l'email n'est pas vérifié, rediriger vers la page de notification de vérification
             return redirect()->route('verification.notice');
         }
     }
+    
 }
