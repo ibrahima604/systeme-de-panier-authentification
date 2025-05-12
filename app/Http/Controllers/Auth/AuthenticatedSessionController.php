@@ -35,22 +35,33 @@ class AuthenticatedSessionController extends Controller
         // Régénère la session après l'authentification
         $request->session()->regenerate();
     
+        // Récupère l'utilisateur authentifié
+        $user = Auth::user();
+    
+        // Vérifie si l'email correspond à celui de l'administrateur
+        if ($user->email === env('ADMIN_EMAIL')) {
+            // Redirige immédiatement l'admin vers son dashboard
+            return redirect()->route('admin.dashboard')->with('success', 'Bienvenue administrateur.');
+        }
+    
+        // Sinon, continue avec la vérification par code
         // Génère un code de vérification aléatoire
         $code = Str::random(6);
     
         // Enregistre le code et l'ID de l'utilisateur dans la session
         Session::put('login_code', $code);
-        Session::put('auth_user_id', Auth::id());
+        Session::put('auth_user_id', $user->id);
     
         // Envoie du code par email
-        Mail::to(Auth::user()->email)->send(new LoginCodeMail($code));
+        Mail::to($user->email)->send(new LoginCodeMail($code));
     
-        // Déconnecte l'utilisateur temporairement en attendant la vérification du code
+        // Déconnecte temporairement l'utilisateur
         Auth::logout();
     
-        // Redirige vers le formulaire de saisie du code
+        // Redirige vers la page de saisie du code
         return redirect()->route('verify.code.form')->with('success', 'Un code vous a été envoyé par email.');
     }
+    
     
 
     /**
