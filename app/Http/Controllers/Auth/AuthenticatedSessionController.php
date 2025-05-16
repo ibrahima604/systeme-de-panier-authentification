@@ -38,12 +38,6 @@ class AuthenticatedSessionController extends Controller
         // Récupère l'utilisateur authentifié
         $user = Auth::user();
     
-        // Vérifie si l'email correspond à celui de l'administrateur
-        if ($user->email === env('ADMIN_EMAIL')) {
-            // Redirige immédiatement l'admin vers son dashboard
-            return redirect()->route('admin.dashboard')->with('success', 'Bienvenue administrateur.');
-        }
-    
         // Sinon, continue avec la vérification par code
         // Génère un code de vérification aléatoire
         $code = Str::random(6);
