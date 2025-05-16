@@ -47,6 +47,7 @@ Route::controller(\App\Http\Controllers\SocialiteAuthController::class)->group(f
 });
 Route::get('/panier', [\App\Http\Controllers\CartController::class, 'index'])->name('panier.index');
 route::get('/admin', [\App\Http\Controllers\AdminController::class, 'index'])->name('admin.dashboard')->middleware('auth');
+Route::get('/admin/users', [\App\Http\Controllers\UserController::class, 'index'])->name('utilisateurs')->middleware('auth');
     
 
 require __DIR__.'/auth.php';
