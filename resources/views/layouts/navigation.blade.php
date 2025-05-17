@@ -6,16 +6,17 @@ $isAdmin = $user->email === config('admin.email');
 <div x-data="{ open: false }" class="bg-white shadow-sm ">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16 fixed top-0 left-0 right-0 bg-white z-10">
         <!-- Gauche : logo + burger -->
-        <div class="flex items-center">
+        <div class="flex items-center justify-between w-full sm:w-auto">
+            <!-- Logo à gauche -->
+            <a href="{{ route('dashboard') }}" class="flex items-center">
+                <img class="h-8 w-auto" src="{{ asset('images/logo.png') }}" alt="Logo" />
+            </a>
+
+            <!-- Burger à droite sur mobile -->
             <button @click="open = !open" class="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none transition duration-150 ease-in-out">
                 <i x-show="!open" class="bi bi-list text-xl"></i>
                 <i x-show="open" class="bi bi-x text-xl"></i>
             </button>
-
-            <a href="{{ route('dashboard') }}" class="flex items-center ml-2 sm:ml-0">
-                <img class="h-8 w-auto" src="{{ asset('images/logo.png') }}" alt="Logo" />
-            </a>
-
             <!-- Liens desktop -->
             <div class="hidden sm:flex sm:ml-6 sm:space-x-8">
                 @if($isAdmin)

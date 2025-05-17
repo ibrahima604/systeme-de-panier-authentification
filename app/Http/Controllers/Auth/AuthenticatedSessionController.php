@@ -37,6 +37,8 @@ class AuthenticatedSessionController extends Controller
     
         // Récupère l'utilisateur authentifié
         $user = Auth::user();
+
+     
     
         // Sinon, continue avec la vérification par code
         // Génère un code de vérification aléatoire
