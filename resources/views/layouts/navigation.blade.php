@@ -72,46 +72,51 @@ $isAdmin = $user->email === config('admin.email');
     </nav>
 
     <!-- Menu mobile -->
-    <div x-show="open" @click.away="open = false" class="sm:hidden bg-white border-t border-gray-200" x-transition>
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                <i class="bi bi-speedometer2 mr-2"></i> {{ $isAdmin ? __('Accueil') : __('Dashboard') }}
-            </x-responsive-nav-link>
-            <!-- autres liens mobile ici -->
+   <!-- Menu mobile -->
+<div x-show="open" @click.away="open = false" class="sm:hidden bg-white border-t border-gray-200" x-transition>
+   
+    <div class="border-t border-gray-200 pt-4 pb-3">
+        <div class="px-4 flex items-center">
+            <div class="flex-shrink-0">
+                <i class="bi bi-person-circle text-2xl text-gray-400"></i>
+            </div>
+            <div class="ml-3">
+                <div class="text-base font-medium text-gray-800">{{ $user->prenom . ' ' . $user->nom }}</div>
+                <div class="text-sm font-medium text-gray-500">{{ $user->email }}</div>
+            </div>
         </div>
 
-        <div class="border-t border-gray-200 pt-4 pb-3">
-            <div class="px-4 flex items-center">
-                <div class="flex-shrink-0">
-                    <i class="bi bi-person-circle text-2xl text-gray-400"></i>
-                </div>
-                <div class="ml-3">
-                    <div class="text-base font-medium text-gray-800">{{ $user->prenom . ' ' . $user->nom }}</div>
-                    <div class="text-sm font-medium text-gray-500">{{ $user->email }}</div>
-                </div>
-            </div>
+        <div class="mt-3 space-y-1 px-2">
+            <x-responsive-nav-link :href="route('profile.edit')">
+                <i class="bi bi-person mr-2"></i> {{ __('Profile') }}
+            </x-responsive-nav-link>
 
-            <div class="mt-3 space-y-1 px-2">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    <i class="bi bi-person mr-2"></i> {{ __('Profile') }}
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <x-responsive-nav-link :href="route('logout')"
+                    onclick="event.preventDefault(); this.closest('form').submit();">
+                    <i class="bi bi-box-arrow-right mr-2"></i> {{ __('Log Out') }}
                 </x-responsive-nav-link>
-
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-responsive-nav-link :href="route('logout')"
-                        onclick="event.preventDefault(); this.closest('form').submit();">
-                        <i class="bi bi-box-arrow-right mr-2"></i> {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
+            </form>
+             @if($isAdmin)
+        <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+            <i class="bi bi-house-door-fill mr-2"></i> {{ __('Accueil') }}
+        </x-responsive-nav-link>
+        @else
+        <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('user.dashboard')">
+            <i class="bi bi-speedometer2 mr-2"></i> {{ __('Dashboard') }}
+        </x-responsive-nav-link>
+        @endif
         </div>
-
-        @unless($isAdmin)
-        <div class="border-t border-gray-200 px-4 py-3">
-            <x-responsive-nav-link :href="route('panier.index')">
-                <i class="bi bi-cart-fill mr-2"></i> Panier ({{ session('cart_count', 0) }})
-            </x-responsive-nav-link>
-        </div>
-        @endunless
     </div>
+
+    @unless($isAdmin)
+    <div class="border-t border-gray-200 px-4 py-3">
+        <x-responsive-nav-link :href="route('panier.index')">
+            <i class="bi bi-cart-fill mr-2"></i> Panier ({{ session('cart_count', 0) }})
+        </x-responsive-nav-link>
+    </div>
+    @endunless
+</div>
+
 </div>

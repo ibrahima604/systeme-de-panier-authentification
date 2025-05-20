@@ -12,7 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="antialiased text-gray-700 bg-gray-50 font-sans">
     <!-- Contenu de la page -->
     <main class="container my-5 d-flex justify-content-center">
     <div class="card shadow p-4 text-center" style="max-width: 800px; width: 100%;">

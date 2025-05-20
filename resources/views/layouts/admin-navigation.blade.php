@@ -24,7 +24,7 @@
           <span>Commandes</span>
         </a>
 
-        <a href="#" class="flex items-center space-x-2 px-3 py-2 hover:text-white hover:bg-gray-700 rounded transition">
+        <a href="{{ route('admin.articles.index') }}" class="flex items-center space-x-2 px-3 py-2 hover:text-white hover:bg-gray-700 rounded transition">
           <i class="bi bi-plus-square text-gray-300"></i>
           <span>Ajouter Article</span>
         </a>

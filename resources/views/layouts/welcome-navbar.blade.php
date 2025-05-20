@@ -78,9 +78,12 @@
     <main class="container mx-auto my-10 px-4 text-center">
         @yield('content')
     </main>
-     <footer>
-        <x-footer  />
-    </footer>
+    {{-- Inclusion des articles --}}
+    @isset($articles)
+        @include('components.articles')
+    @endisset
+
+     
 
     <script>
         // Toggle mobile menu
