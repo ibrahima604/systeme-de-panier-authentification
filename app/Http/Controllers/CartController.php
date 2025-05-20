@@ -3,23 +3,57 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Article;
 
 class CartController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        return view('panier.index');
+public function index()
+{
+    // Récupération du panier depuis la session
+    $panier = session()->get('panier', []);
+
+    // Calcul du total
+    $total = 0;
+    foreach ($panier as $item) {
+        $total += $item['prix'] * $item['quantite'];
     }
+
+    // Envoi des données à la vue
+    return view('panier.index', compact('panier', 'total'));
+}
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        
+    }
+
+    public function ajouter(Request $request, $id)
+    {
+        $article = Article::findOrFail($id);
+
+        $panier = session()->get('panier', []);
+
+        if (isset($panier[$id])) {
+            $panier[$id]['quantite']++;
+        } else {
+            $panier[$id] = [
+                'libelle' => $article->libelle,
+                'prix' => $article->prix,
+                'image' => $article->image,
+                'quantite' => 1,
+            ];
+        }
+
+        session()->put('panier', $panier);
+        session()->put('cart_count', array_sum(array_column($panier, 'quantite')));
+
+        return redirect()->back()->with('success', 'Article ajouté au panier !');
     }
 
     /**
@@ -27,7 +61,7 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
