@@ -3,7 +3,7 @@
 <!-- Inclure Bootstrap Icons -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-<footer class="bg-gray-900 text-white py-8 w-full">
+<footer class="bg-gray-900 text-white py-8 w-full rounded-md">
     <div class="w-full px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
             <h5 class="text-lg font-bold mb-4">À propos</h5>

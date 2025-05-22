@@ -8,6 +8,8 @@ use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Services\OpenAIService;
 
 class AdminArticleController extends Controller
 {
@@ -105,12 +107,63 @@ class AdminArticleController extends Controller
     // Mise à jour des autres champs
     $article->libelle = $request->libelle;
     $article->description = $request->description;
-    $article->quantite = $request->quantity;
+    $article->quantite = $request->quantite;
     $article->prix = $request->prix;
 
     $article->save();
 
     return redirect()->route('admin.articles.index')->with('success', 'Article mis à jour avec succès.');
+}
+
+public function generateWithAI(OpenAIService $openAI)
+{
+    try {
+        Log::info('Generating article with AI...');
+
+        // Génération des données de l'article
+        $data = $openAI->generateCompleteArticle();
+        Log::info('Generated article data:', $data);
+
+        if (empty($data['libelle'])) {
+            throw new \Exception("Le champ 'libelle' est manquant dans la réponse AI.");
+        }
+
+        // Génération de l'image à partir du libellé
+        $imageUrl = $openAI->generateImage($data['libelle']);
+        Log::info('Generated image URL:', ['url' => $imageUrl]);
+
+        if (!$imageUrl) {
+            throw new \Exception("Impossible de générer l'image.");
+        }
+
+        // Récupération du contenu de l'image
+        $imageContent = @file_get_contents($imageUrl);
+        if ($imageContent === false) {
+            throw new \Exception("Impossible de récupérer le contenu de l'image depuis l'URL.");
+        }
+
+        // Création d'un nom unique pour l'image
+        $imageName = 'articles/' . uniqid() . '.png';
+
+        // Sauvegarde de l'image dans le disque public (vérifier que le disque 'public' est configuré)
+        Storage::disk('public')->put($imageName, $imageContent);
+
+        // Création de l'article en base
+        Article::create([
+            'libelle' => $data['libelle'],
+            'description' => $data['description'] ?? '',
+            'quantite' => isset($data['quantite']) ? (int) $data['quantite'] : 1,
+            'prix' => isset($data['prix']) ? (float) $data['prix'] : 0.0,
+            'image' => $imageName,
+        ]);
+
+        Log::info('Article generated successfully.');
+
+        return redirect()->route('articles.index')->with('success', 'Article généré avec succès !');
+    } catch (\Exception $e) {
+        Log::error('Error generating article with AI:', ['error' => $e->getMessage()]);
+        return back()->with('error', 'Erreur IA : ' . $e->getMessage());
+    }
 }
    
 }

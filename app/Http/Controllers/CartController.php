@@ -83,16 +83,41 @@ public function index()
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
-        //
+        $panier=session()->get('panier');
+        if(isset($panier[$id])){
+            $panier[$id]['quantite']=$request->quantite;
+            session()->put('panier',$panier);
+            session()->put('cart_count', array_sum(array_column($panier, 'quantite')));
+
+        }
+        return redirect()->back()->with('success', 'Quantité mise à jour !');
+        
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function vider()
     {
-        //
+        // Suppression du panier de la session
+        session()->forget('panier');
+        session()->forget('cart_count');
+
+        return redirect()->back()->with('success', 'Panier vidé !');
+        
+    }
+    public function supprimer($id)
+    {
+        $panier = session()->get('panier');
+
+        if (isset($panier[$id])) {
+            unset($panier[$id]);
+            session()->put('panier', $panier);
+            session()->put('cart_count', array_sum(array_column($panier, 'quantite')));
+        }
+
+        return redirect()->back()->with('success', 'Article supprimé du panier !');
     }
 }
