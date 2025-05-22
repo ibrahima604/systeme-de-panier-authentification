@@ -13,7 +13,7 @@
 
     <!-- Navbar pour les visiteurs (non connectés) -->
     @guest
-    <nav class="bg-gray-900 text-white shadow fixed top-0 left-0 w-full mb-10">
+    <nav class="bg-gray-900 text-white shadow fixed top-0 left-0 w-full mb-20 rounded-md border-b-2 border-white z-50 ">
         <div class="container mx-auto flex flex-wrap items-center justify-between p-4">
             <a href="{{ url('/') }}" class="flex items-center gap-2 mr-5 mb-3">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-6 h-6" />
@@ -29,7 +29,23 @@
                 </svg>
             </button>
 
+
+
             <div id="menu" class="hidden w-full lg:flex lg:w-auto lg:items-center lg:justify-end gap-6">
+                <form action="{{ url('/') }}">
+                    @csrf
+                    @method('GET')
+                    <input
+                        type="text"
+                        name="query"
+                        placeholder="Rechercher un article..."
+                        class="px-3 py-1 border rounded-l text-black"
+                        value="{{ request('query') }}">
+                    <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded-r hover:bg-blue-600">
+                        Rechercher
+                    </button>
+                </form>
+
                 <ul class="flex flex-col lg:flex-row lg:items-center gap-4 text-lg">
                     <li>
                         <a href="{{ route('login') }}" class="hover:underline flex items-center gap-1">
@@ -43,6 +59,12 @@
                         </a>
                     </li>
                     @endif
+                    <li>
+                        <a href="#about">
+                            <i class="bi bi-info-circle"></i>
+                            <span>À propos</span>
+                        </a>
+                    </li>
                     <li class="relative">
                         <a href="{{ route('panier.index') }}" class="hover:underline flex items-center gap-1">
                             <i class="bi bi-cart-fill"></i> Panier
@@ -63,9 +85,52 @@
     @endauth
 
     <!-- Contenu articles -->
-    <main class="container mx-auto px-4 py-6 ">
+    <main class="container mx-auto px-4 py-6 mt-14">
+        @guest
+        <section
+        x-data="{
+        images: [
+            '{{ asset('images/hero1.jpeg') }}',
+            '{{ asset('images/hero2.jpeg') }}',
+            '{{ asset('images/hero3.png') }}'
+        ],
+        index: 0,
+        init() {
+            setInterval(() => {
+                this.index = (this.index + 1) % this.images.length;
+            }, 2000); // Changement toutes les 2 secondes
+        }
+    }"
+            class="relative h-[80vh] w-full overflow-hidden rounded-md shadow-lg">
+            <!-- Image slider -->
+            <template x-for="(image, i) in images" :key="i">
+                <div
+                    x-show="index === i"
+                    class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+                    :style="`background-image: url(${image});`"
+                    x-transition:enter="transition-opacity duration-1000"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition-opacity duration-1000"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"></div>
+            </template>
+
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+
+            <!-- Contenu du Hero -->
+            <div class="relative z-10 flex flex-col justify-center items-start h-full max-w-7xl mx-auto px-4 text-white">
+                <h1 class="text-4xl sm:text-5xl font-bold mb-4">Trouvez les meilleurs articles au meilleur prix</h1>
+                <p class="text-lg sm:text-xl mb-6">Livraison rapide, produits frais, satisfaction garantie !</p>
+                <a href="" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition">
+                    Commander maintenant
+                </a>
+            </div>
+        </section>
+
+        @endguest
         <div class="mb-10 text-center mt-12">
-            <h1 class="text-4xl font-bold text-gray-800 mb-6">Bienvenue sur notre plateforme de panier avec Laravel!</h1>
             <p class="text-lg text-gray-600">Découvrez nos articles disponibles</p>
         </div>
 
@@ -80,9 +145,9 @@
                     <p class="text-lg font-bold text-indigo-600 mb-4">{{ number_format($article->prix, 2) }} MAD</p>
 
                     <a href="{{ route('panier.ajouter', $article->id) }}"
-   class="w-full inline-block text-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
-    Ajouter au panier
-</a>
+                        class="w-full inline-block text-center bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200">
+                        Ajouter au panier
+                    </a>
 
 
                 </div>
@@ -91,20 +156,24 @@
         </div>
 
         <div class="mt-8 flex justify-center">
-            {{ $articles->links() }}
+            {{ $articles->withQueryString()->links() }}
         </div>
+        @include('profile.partials.about');
     </main>
+
 
     <!-- Script du menu mobile -->
     <script>
-        const btn = document.getElementById('menu-btn');
-        const menu = document.getElementById('menu');
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('menu-btn');
+            const menu = document.getElementById('menu');
 
-        if (btn) {
-            btn.addEventListener('click', () => {
-                menu.classList.toggle('hidden');
-            });
-        }
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    menu.classList.toggle('hidden');
+                });
+            }
+        });
     </script>
 </body>
 
