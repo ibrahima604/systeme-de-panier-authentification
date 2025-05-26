@@ -23,15 +23,20 @@
                     <p class="text-gray-700 mb-2 truncate">{{ Str::limit($article->description, 80) }}</p>
                     <p class="text-lg font-bold text-indigo-600 mb-4">{{ number_format($article->prix, 2) }} MAD</p>
 
-                    <div class="flex justify-between gap-2">
+                    <div class="flex flex-col gap-2">
                         <a href="{{ route('admin.articles.edit', $article->id) }}"
-                            class="w-1/2 text-center bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition duration-200">
+                            class="text-center bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition duration-200">
                             Modifier
+                        </a>
+
+                        <a href="{{ route('admin.articles.variantes.create', $article->id) }}"
+                            class="text-center bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-200">
+                            Ajouter une variante
                         </a>
 
                         @if (is_null($article->deleted_at))
                         <!-- Bouton de suppression -->
-                        <form method="POST" action="{{ route('admin.articles.softDelete', $article->id) }}" class="w-1/2">
+                        <form method="POST" action="{{ route('admin.articles.softDelete', $article->id) }}">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
@@ -42,7 +47,7 @@
                         </form>
                         @else
                         <!-- Bouton de restauration -->
-                        <form method="POST" action="{{ route('admin.articles.restore', $article->id) }}" class="w-1/2">
+                        <form method="POST" action="{{ route('admin.articles.restore', $article->id) }}">
                             @csrf
                             @method('PATCH')
                             <button type="submit"
@@ -53,6 +58,7 @@
                         </form>
                         @endif
                     </div>
+
                 </div>
             </div>
             @endforeach

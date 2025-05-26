@@ -20,4 +20,25 @@ class Article extends Model
         'image',
     ];
     
+    public function variantes()
+{
+    return $this->hasMany(Variante::class);
+}
+// App\Models\Article.php
+
+
+
+public function couleurImages()
+{
+    return $this->hasMany(ArticleCouleurImage::class);
+}
+
+// Optionnel : pour récupérer directement les couleurs avec leurs images associées
+public function couleursAvecImages()
+{
+    return $this->belongsToMany(Couleur::class, 'article_couleur_images')
+                ->withPivot('image')
+                ->withTimestamps();
+}
+
 }

@@ -33,28 +33,66 @@ public function index()
         
     }
 
-    public function ajouter(Request $request, $id)
-    {
-        $article = Article::findOrFail($id);
+ public function ajouter(Request $request, $id)
+{
+    $article = Article::findOrFail($id);
 
-        $panier = session()->get('panier', []);
+    $tailleId = $request->input('taille_id');
+    $couleurId = $request->input('couleur_id');
 
-        if (isset($panier[$id])) {
-            $panier[$id]['quantite']++;
+
+
+
+    $panier = session()->get('panier', []);
+
+    $key = $id . '-' . ($tailleId ?? '0') . '-' . ($couleurId ?? '0');
+
+    if (isset($panier[$key])) {
+        $panier[$key]['quantite']++;
+    } else {
+        // Si l'article n'est pas déjà dans le panier, on l'ajoute
+        // avec les détails de la taille et de la couleur
+        if (isset($tailleId)) {
+            // Si aucune taille n'est sélectionnée, on met à null
+             $VarianteTaille= $article->variantes()->where('taille_id', $tailleId)->first();
+       $tailleNom=$VarianteTaille->taille->nom;
         } else {
-            $panier[$id] = [
-                'libelle' => $article->libelle,
-                'prix' => $article->prix,
-                'image' => $article->image,
-                'quantite' => 1,
-            ];
+            $tailleId = 0; // Si aucune taille n'est sélectionnée, on met à null
+            $tailleNom = 'Taille par défaut'; // Valeur par défaut si pas de taille
         }
+      
+       
+        
+        if(isset($couleurId)){
+            $VarianteCouleur= $article->variantes()->where('couleur_id', $couleurId)->first();
+            $couleurNom=$VarianteCouleur->couleur->nom; 
+        } else {
+            $couleurId = 0; // Si aucune couleur n'est sélectionnée, on met à null
+            $couleurNom = 'Couleur par défaut'; // Valeur par défaut si pas de couleur
+        }
+      
+        $varianteImage=$article->couleursAvecImages()->where('couleur_id', $couleurId)->first();
+        $image=$varianteImage->pivot->image ?? $article->image; // Utilise l'image de la variante ou l'image de l'article
 
-        session()->put('panier', $panier);
-        session()->put('cart_count', array_sum(array_column($panier, 'quantite')));
 
-        return redirect()->back()->with('success', 'Article ajouté au panier !');
+        $panier[$key] = [
+            'article_id' => $id,
+            'libelle' => $article->libelle,
+            'prix' => $article->prix,
+            'image' => $image,
+            'quantite' => 1,
+            'taille' => $tailleNom,
+            'couleur' => $couleurNom,
+            'taille_id' => $tailleId,
+            'couleur_id' => $couleurId,
+
+        ];
     }
+
+    session()->put('panier', $panier);
+
+    return redirect()->route('panier.index')->with('success', 'Article ajouté au panier.');
+}
 
     /**
      * Store a newly created resource in storage.
@@ -83,7 +121,7 @@ public function index()
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, mixed $id)
     {
         $panier=session()->get('panier');
         if(isset($panier[$id])){
@@ -105,7 +143,12 @@ public function index()
         session()->forget('panier');
         session()->forget('cart_count');
 
-        return redirect()->back()->with('success', 'Panier vidé !');
+        if (auth()->check()) {
+            return redirect()->route('dashboard')->with('success', 'Panier vidé !');
+        }
+
+         // Redirection vers la page d'accueil (ou une autre route nommée)
+    return redirect('/')->with('success', 'Panier vidé !');
         
     }
     public function supprimer($id)
