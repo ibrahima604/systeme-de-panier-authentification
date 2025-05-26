@@ -37,9 +37,10 @@ class ArticleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Article $article)
     {
-        //
+        // Récupère l'article via Route Model Binding et affiche la vue détail
+        return view('articles.show', compact('article'));
     }
 
     /**

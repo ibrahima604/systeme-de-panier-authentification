@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminArticleController;
+use App\Http\Controllers\VarianteController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,6 +74,10 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
     Route::patch('admin/articles/{article}/restore', [AdminArticleController::class, 'restore'])->name('admin.articles.restore');
     Route::get('/articles/{article}/edit', [AdminArticleController::class, 'edit'])->name('admin.articles.edit');
     Route::patch('/articles/{article}', [AdminArticleController::class, 'update'])->name('admin.articles.update');
+    //Variantes
+    Route::get('/admin/articles/{article}/variantes/create', [VarianteController::class, 'create'])->name('admin.articles.variantes.create');
+Route::post('/admin/articles/{article}/variantes', [VarianteController::class, 'store'])->name('admin.articles.variantes.store');
+
 });
 
 Route::get('/panier', [CartController::class, 'index'])->name('panier.index');
@@ -81,6 +86,9 @@ Route::get('/articles/generer-ia', [AdminArticleController::class, 'generateWith
 Route::patch('/panier/update/{id}', [CartController::class, 'update'])->name('panier.article.update');
 Route::delete('/panier/supprimer/{id}', [CartController::class, 'supprimer'])->name('panier.supprimer');
 Route::delete('/panier/vider', [CartController::class, 'vider'])->name('panier.vider');
+Route::get('/articles/{article}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
+Route::post('/articles/{article}/ajouter-au-panier', [App\Http\Controllers\CartController::class, 'ajouter'])->name('articles.ajouter-au-panier');
+
 
 
 require __DIR__ . '/auth.php';
