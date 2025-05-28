@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\VarianteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CommandeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,12 +29,12 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified', 'isUser'])->name('dashboard');
 
-Route::middleware(['auth','isUser'])->group(function () {
+Route::middleware(['auth', 'isUser'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
-    Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/checkout', [CommandeController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/success', [CommandeController::class, 'success'])->name('checkout.success');
 });
 
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -79,8 +80,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
     Route::patch('/articles/{article}', [AdminArticleController::class, 'update'])->name('admin.articles.update');
     //Variantes
     Route::get('/admin/articles/{article}/variantes/create', [VarianteController::class, 'create'])->name('admin.articles.variantes.create');
-Route::post('/admin/articles/{article}/variantes', [VarianteController::class, 'store'])->name('admin.articles.variantes.store');
-
+    Route::post('/admin/articles/{article}/variantes', [VarianteController::class, 'store'])->name('admin.articles.variantes.store');
 });
 
 Route::get('/panier', [CartController::class, 'index'])->name('panier.index');
