@@ -117,7 +117,7 @@
                             <img src="{{ asset('storage/' . $article->image) }}"
                                 alt="Default"
                                 class="thumbnail rounded cursor-pointer border-2 border-transparent hover:border-indigo-500 focus:border-indigo-500">
-                        </button>
+                        </button> 
 
                         <!-- Images des variantes couleur -->
                         @foreach($article->couleurImages as $image)
@@ -127,7 +127,7 @@
                                 class="thumbnail rounded cursor-pointer border-2 border-transparent hover:border-indigo-500 focus:border-indigo-500">
                         </button>
                         @endforeach
-        
+
                     </div>
 
                     <!-- Boutons de sélection des tailles -->

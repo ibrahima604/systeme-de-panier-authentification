@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\VarianteController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,10 +28,12 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified', 'isUser'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth','isUser'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 });
 
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -88,6 +91,9 @@ Route::delete('/panier/supprimer/{id}', [CartController::class, 'supprimer'])->n
 Route::delete('/panier/vider', [CartController::class, 'vider'])->name('panier.vider');
 Route::get('/articles/{article}', [App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 Route::post('/articles/{article}/ajouter-au-panier', [App\Http\Controllers\CartController::class, 'ajouter'])->name('articles.ajouter-au-panier');
+Route::post('/panier/changer-taille', [CartController::class, 'changerTaille'])->name('panier.changerTaille');
+Route::post('/panier/changer-couleur', [CartController::class, 'changerCouleur'])->name('panier.changerCouleur');
+
 
 
 
