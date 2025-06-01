@@ -79,7 +79,7 @@
     </style>
 </head>
 
-<body class="font-sans bg-gray-50" x-data="appData()">
+<body class="font-sans bg-gray-400" x-data="appData()">
     <!-- Navbar pour les visiteurs (non connectés) -->
     @guest
     <nav class="bg-gray-900 text-white shadow fixed top-0 left-0 w-full z-50" x-data="{ mobileMenuOpen: false, accountOpen: false }">
@@ -221,10 +221,10 @@
     @include('layouts.navigation')
     @endauth
 
-    <main class="container mx-auto px-4 py-6 mt-10" x-data="searchComponent()">
+    <main class="container mx-auto px-4 py-6 mt-10 " x-data="searchComponent()">
         <section x-data="{ current: 0, images: ['{{ asset('images/hero1.jpeg') }}', '{{ asset('images/hero2.jpeg') }}', '{{ asset('images/hero3.jpeg') }}'] }" 
          x-init="setInterval(() => { current = (current + 1) % images.length }, 5000)" 
-         class="relative h-[90vh] overflow-hidden bg-gray-900">
+         class="relative h-[90vh] overflow-hidden bg-gray-400">
 
     {{-- Images --}}
     <template x-for="(image, index) in images" :key="index">
