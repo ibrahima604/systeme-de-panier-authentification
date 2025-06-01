@@ -221,8 +221,8 @@
     @include('layouts.navigation')
     @endauth
 
-    <main class="container mx-auto px-4 py-6 mt-10 " x-data="searchComponent()">
-        <section x-data="{ current: 0, images: ['{{ asset('images/hero1.jpeg') }}', '{{ asset('images/hero2.jpeg') }}', '{{ asset('images/hero3.jpeg') }}'] }" 
+    <main class="container mx-auto px-4 py-6 mt-12" x-data="searchComponent()">
+        <section x-data="{ current: 0, images: ['{{ asset('images/hero1.jpeg') }}', '{{ asset('images/hero2.jpeg') }}', '{{ asset('images/hero3.png') }}'] }" 
          x-init="setInterval(() => { current = (current + 1) % images.length }, 5000)" 
          class="relative h-[90vh] overflow-hidden bg-gray-400">
 

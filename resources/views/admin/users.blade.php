@@ -2,7 +2,7 @@
     <x-slot name="header" >
         <div class="flex justify-between items-center">
             <h1 class="text-2xl font-bold text-gray-800">Gestion des utilisateurs</h1>
-            <a href="#" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            <a href="" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                 <i class="bi bi-plus-circle mr-2"></i> Nouvel utilisateur
             </a>
         </div>

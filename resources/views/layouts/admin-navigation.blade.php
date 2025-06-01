@@ -4,7 +4,13 @@
 
       <!-- Logo / Titre -->
       <div class="text-lg font-semibold">
-        <a href="{{ route('admin.dashboard') }}">Admin Panel</a>
+       {{-- Logo + Dashboard --}}
+          
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 w-auto" />
+                    <span class="text-xl font-semibold hidden sm:block">Admin Panel</span>
+                </a>
+          
       </div>
 
       <!-- Menu principal visible sur sm+ -->

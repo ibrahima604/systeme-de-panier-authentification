@@ -1,3 +1,4 @@
+@php use Illuminate\Support\Facades\Auth; @endphp
 @extends('layouts.panier-affichage')
 
 @section('content')
@@ -6,12 +7,21 @@
         <!-- Breadcrumbs -->
         <nav class="flex mb-8" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                @if(!auth::check())
                 <li class="inline-flex items-center">
                     <a href="{{ url('/') }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-blue-600">
                         <i class="bi bi-house-door mr-2"></i>
                         Accueil
                     </a>
                 </li>
+                @else
+                 <li class="inline-flex items-center">
+                    <a href="{{route('dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-blue-600">
+                        <i class="bi bi-house-door mr-2"></i>
+                        Dashboard
+                    </a>
+                </li>
+                @endif
                 <li aria-current="page">
                     <div class="flex items-center">
                         <i class="bi bi-chevron-right text-gray-400 mx-2"></i>
@@ -188,10 +198,18 @@
                                class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-3 px-4 rounded-lg shadow-md transition font-medium">
                                 Passer la commande
                             </a>
-                            <a href="" 
+                            @if(!auth::check())
+                            <a href="{{url('/')}}" 
                                class="block w-full border border-gray-300 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-50 transition font-medium">
                                 Continuer mes achats
                             </a>
+                            @else
+                            <a href="{{route('dashboard')}}" 
+                               class="block w-full border border-gray-300 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-50 transition font-medium">
+                                Continuer mes achats
+                            </a>
+                            @endif
+
                         </div>
                     </div>
                 </div>
