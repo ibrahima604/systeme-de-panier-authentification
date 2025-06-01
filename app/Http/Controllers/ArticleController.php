@@ -42,7 +42,17 @@ class ArticleController extends Controller
         // Récupère l'article via Route Model Binding et affiche la vue détail
         return view('articles.show', compact('article'));
     }
+    public function rechercheAjax(Request $request)
+    {
+        $query = $request->input('query');
 
+        $articles = Article::with(['variantes.couleur', 'variantes.taille', 'couleurImages.couleur'])
+            ->whereRaw('LOWER(libelle) LIKE ?', ['%' . strtolower($query) . '%'])
+            ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($query) . '%'])
+            ->get();
+
+        return response()->json($articles);
+    }
     /**
      * Show the form for editing the specified resource.
      */

@@ -36,6 +36,7 @@ class CartController extends Controller
 
         $tailleId = $request->input('taille_id');
         $couleurId = $request->input('couleur_id');
+        $quantite=$request->input('quantite',1);
 
         // Initialisation pour éviter les erreurs de portée
         $Taille = [];
@@ -101,7 +102,7 @@ class CartController extends Controller
                 'libelle' => $article->libelle,
                 'prix' => $article->prix,
                 'image' => $image,
-                'quantite' => 1,
+                'quantite' => $quantite,
                 'taille' => $tailleNom,
                 'couleur' => $couleurNom,
                 'taille_id' => $tailleId,
@@ -114,9 +115,17 @@ class CartController extends Controller
             ];
         }
 
-        session()->put('panier', $panier);
+        // Calcul du nombre total d'articles dans le panier
+        $cartCount = array_sum(array_column($panier, 'quantite'));
+        session()->put('cart_count', $cartCount);
 
-        return redirect()->route('panier.index')->with('success', 'Article ajouté au panier.');
+
+        session()->put('panier', $panier);
+        if (auth()->check()) {
+            return redirect()->route('dashboard')->with('success', 'Article ajouté au panier.');
+        }
+        // Redirection vers la page d'accueil (ou une autre route nommée)
+        return redirect('/')->with('success', 'Article ajouté au panier.');
     }
 
     /**
@@ -133,116 +142,116 @@ class CartController extends Controller
     }
 
     public function changerCouleur(Request $request)
-{
-    $articleId = $request->input('article_id');
-    $nouvelleCouleurId = $request->input('nouvelle_couleur');
-    $tailleId = $request->input('taille_id');
-    $oldKey = $request->input('old_key');
+    {
+        $articleId = $request->input('article_id');
+        $nouvelleCouleurId = $request->input('nouvelle_couleur');
+        $tailleId = $request->input('taille_id');
+        $oldKey = $request->input('old_key');
 
-    $article = Article::findOrFail($articleId);
-    $panier = session()->get('panier', []);
+        $article = Article::findOrFail($articleId);
+        $panier = session()->get('panier', []);
 
-    // Vérifie que l'item existe
-    if (!isset($panier[$oldKey])) {
-        return redirect()->route('panier.index')->with('error', 'Article introuvable dans le panier.');
+        // Vérifie que l'item existe
+        if (!isset($panier[$oldKey])) {
+            return redirect()->route('panier.index')->with('error', 'Article introuvable dans le panier.');
+        }
+
+        // Récupérer les données à conserver AVANT suppression
+        $couleurArticle = $panier[$oldKey]['couleurArticle'] ?? [];
+        $tailleArticle = $panier[$oldKey]['tailleArticle'] ?? [];
+        $couleurArticleIDS = $panier[$oldKey]['couleurArticleIDS'] ?? [];
+        $tailleArticleIDS = $panier[$oldKey]['tailleArticleIDS'] ?? [];
+        $imageArticle = $panier[$oldKey]['imageArticle'] ?? [];
+        $quantite = $panier[$oldKey]['quantite'] ?? 1;
+
+        // Supprimer l'ancien item
+        unset($panier[$oldKey]);
+
+        // Reconstituer la nouvelle clé avec la nouvelle couleur
+        $newKey = $articleId . '-' . ($tailleId ?? 0) . '-' . $nouvelleCouleurId;
+
+        // Trouver les infos de la nouvelle couleur
+        $varianteCouleur = $article->variantes()->where('couleur_id', $nouvelleCouleurId)->first();
+        $couleurNom = $varianteCouleur->couleur->nom ?? 'Couleur inconnue';
+
+        // Trouver les infos de la taille
+        if ($tailleId && $tailleId != 0) {
+            $varianteTaille = $article->variantes()->where('taille_id', $tailleId)->first();
+            $tailleNom = $varianteTaille->taille->nom ?? 'Taille inconnue';
+        } else {
+            $tailleNom = 'Taille par défaut';
+        }
+
+        // Récupérer image selon la nouvelle couleur
+        $varianteImage = $article->couleursAvecImages()->where('couleur_id', $nouvelleCouleurId)->first();
+        $image = $varianteImage->pivot->image ?? $article->image;
+
+        // Ajouter le nouvel item avec la nouvelle clé
+        $panier[$newKey] = [
+            'article_id' => $articleId,
+            'libelle' => $article->libelle,
+            'prix' => $article->prix,
+            'image' => $image,
+            'quantite' => $quantite,
+            'taille' => $tailleNom,
+            'couleur' => $couleurNom,
+            'taille_id' => $tailleId,
+            'couleur_id' => $nouvelleCouleurId,
+            'couleurArticle' => $couleurArticle,
+            'tailleArticle' => $tailleArticle,
+            'couleurArticleIDS' => $couleurArticleIDS,
+            'tailleArticleIDS' => $tailleArticleIDS,
+            'imageArticle' => $imageArticle,
+        ];
+
+        session()->put('panier', $panier);
+
+        return redirect()->route('panier.index')->with('success', 'Couleur modifiée avec succès.');
     }
-
-    // Récupérer les données à conserver AVANT suppression
-    $couleurArticle = $panier[$oldKey]['couleurArticle'] ?? [];
-    $tailleArticle = $panier[$oldKey]['tailleArticle'] ?? [];
-    $couleurArticleIDS = $panier[$oldKey]['couleurArticleIDS'] ?? [];
-    $tailleArticleIDS = $panier[$oldKey]['tailleArticleIDS'] ?? [];
-    $imageArticle = $panier[$oldKey]['imageArticle'] ?? [];
-    $quantite = $panier[$oldKey]['quantite'] ?? 1;
-
-    // Supprimer l'ancien item
-    unset($panier[$oldKey]);
-
-    // Reconstituer la nouvelle clé avec la nouvelle couleur
-    $newKey = $articleId . '-' . ($tailleId ?? 0) . '-' . $nouvelleCouleurId;
-
-    // Trouver les infos de la nouvelle couleur
-    $varianteCouleur = $article->variantes()->where('couleur_id', $nouvelleCouleurId)->first();
-    $couleurNom = $varianteCouleur->couleur->nom ?? 'Couleur inconnue';
-
-    // Trouver les infos de la taille
-    if ($tailleId && $tailleId != 0) {
-        $varianteTaille = $article->variantes()->where('taille_id', $tailleId)->first();
-        $tailleNom = $varianteTaille->taille->nom ?? 'Taille inconnue';
-    } else {
-        $tailleNom = 'Taille par défaut';
-    }
-
-    // Récupérer image selon la nouvelle couleur
-    $varianteImage = $article->couleursAvecImages()->where('couleur_id', $nouvelleCouleurId)->first();
-    $image = $varianteImage->pivot->image ?? $article->image;
-
-    // Ajouter le nouvel item avec la nouvelle clé
-    $panier[$newKey] = [
-        'article_id' => $articleId,
-        'libelle' => $article->libelle,
-        'prix' => $article->prix,
-        'image' => $image,
-        'quantite' => $quantite,
-        'taille' => $tailleNom,
-        'couleur' => $couleurNom,
-        'taille_id' => $tailleId,
-        'couleur_id' => $nouvelleCouleurId,
-        'couleurArticle' => $couleurArticle,
-        'tailleArticle' => $tailleArticle,
-        'couleurArticleIDS' => $couleurArticleIDS,
-        'tailleArticleIDS' => $tailleArticleIDS,
-        'imageArticle' => $imageArticle,
-    ];
-
-    session()->put('panier', $panier);
-
-    return redirect()->route('panier.index')->with('success', 'Couleur modifiée avec succès.');
-}
 
 
     public function changerTaille(Request $request)
-{
-    $articleId = $request->input('article_id');
-    $nouvelleTailleId = $request->input('nouvelle_taille');
-    $couleurId = $request->input('couleur_id');
-    $oldKey = $request->input('old_key');
+    {
+        $articleId = $request->input('article_id');
+        $nouvelleTailleId = $request->input('nouvelle_taille');
+        $couleurId = $request->input('couleur_id');
+        $oldKey = $request->input('old_key');
 
-    $article = Article::findOrFail($articleId);
-    $panier = session()->get('panier', []);
+        $article = Article::findOrFail($articleId);
+        $panier = session()->get('panier', []);
 
-    // Vérifier que l'article existe dans le panier
-    if (!isset($panier[$oldKey])) {
-        return redirect()->route('panier.index')->with('error', 'Article introuvable dans le panier.');
+        // Vérifier que l'article existe dans le panier
+        if (!isset($panier[$oldKey])) {
+            return redirect()->route('panier.index')->with('error', 'Article introuvable dans le panier.');
+        }
+
+        // Récupérer les données existantes
+        $item = $panier[$oldKey];
+
+        // Trouver les infos de la nouvelle taille
+        $varianteTaille = $article->variantes()->where('taille_id', $nouvelleTailleId)->first();
+        $tailleNom = $varianteTaille->taille->nom ?? 'Taille inconnue';
+
+        // Récupérer image selon la couleur
+        $varianteImage = $article->couleursAvecImages()->where('couleur_id', $couleurId)->first();
+        $image = $varianteImage->pivot->image ?? $article->image;
+
+        // Mise à jour directe dans la même ligne de commande
+        $panier[$oldKey]['taille'] = $tailleNom;
+        $panier[$oldKey]['taille_id'] = $nouvelleTailleId;
+        $panier[$oldKey]['image'] = $image;
+
+        // Initialiser ou conserver les champs additionnels
+        $panier[$oldKey]['couleurArticle'] = $panier[$oldKey]['couleurArticle'] ?? [];
+        $panier[$oldKey]['tailleArticle'] = $panier[$oldKey]['tailleArticle'] ?? [];
+        $panier[$oldKey]['couleurArticleIDS'] = $panier[$oldKey]['couleurArticleIDS'] ?? [];
+        $panier[$oldKey]['tailleArticleIDS'] = $panier[$oldKey]['tailleArticleIDS'] ?? [];
+        $panier[$oldKey]['imageArticle'] = $panier[$oldKey]['imageArticle'] ?? [];
+
+        session()->put('panier', $panier);
+
+        return redirect()->route('panier.index')->with('success', 'Taille modifiée avec succès.');
     }
-
-    // Récupérer les données existantes
-    $item = $panier[$oldKey];
-
-    // Trouver les infos de la nouvelle taille
-    $varianteTaille = $article->variantes()->where('taille_id', $nouvelleTailleId)->first();
-    $tailleNom = $varianteTaille->taille->nom ?? 'Taille inconnue';
-
-    // Récupérer image selon la couleur
-    $varianteImage = $article->couleursAvecImages()->where('couleur_id', $couleurId)->first();
-    $image = $varianteImage->pivot->image ?? $article->image;
-
-    // Mise à jour directe dans la même ligne de commande
-    $panier[$oldKey]['taille'] = $tailleNom;
-    $panier[$oldKey]['taille_id'] = $nouvelleTailleId;
-    $panier[$oldKey]['image'] = $image;
-
-    // Initialiser ou conserver les champs additionnels
-    $panier[$oldKey]['couleurArticle'] = $panier[$oldKey]['couleurArticle'] ?? [];
-    $panier[$oldKey]['tailleArticle'] = $panier[$oldKey]['tailleArticle'] ?? [];
-    $panier[$oldKey]['couleurArticleIDS'] = $panier[$oldKey]['couleurArticleIDS'] ?? [];
-    $panier[$oldKey]['tailleArticleIDS'] = $panier[$oldKey]['tailleArticleIDS'] ?? [];
-    $panier[$oldKey]['imageArticle'] = $panier[$oldKey]['imageArticle'] ?? [];
-
-    session()->put('panier', $panier);
-
-    return redirect()->route('panier.index')->with('success', 'Taille modifiée avec succès.');
-}
 
 
 

@@ -1,5 +1,5 @@
 <x-admin-layout>
-    <x-slot name="header">
+    <x-slot name="header" >
         <div class="flex justify-between items-center">
             <h1 class="text-2xl font-bold text-gray-800">Gestion des utilisateurs</h1>
             <a href="#" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
@@ -8,7 +8,7 @@
         </div>
     </x-slot>
 
-    <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+    <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm bg-gray-400 ">
         <table class="min-w-full bg-white">
             <thead class="bg-gray-50">
                 <tr>
