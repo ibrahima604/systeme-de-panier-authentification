@@ -16,6 +16,33 @@ class UserController extends Controller
         return view('admin.users', compact('users'));
     }
 
+    //a propos
+   public function about()
+{
+    $teamMembers = [
+        [
+            'name' => 'Jean Dupont',
+            'position' => 'CEO & Fondateur',
+            'bio' => 'Expert en e-commerce avec 15 ans d\'expérience dans le secteur.',
+            'image' => 'images/team/jean.jpg'
+        ],
+        // Ajoutez d'autres membres de l'équipe
+    ];
+
+    $testimonials = [
+        [
+            'name' => 'Marie Lambert',
+            'position' => 'Directrice Marketing',
+            'comment' => 'La qualité des produits est exceptionnelle. Livraison rapide et service client réactif.',
+            'rating' => 5,
+            'avatar' => 'images/avatars/marie.jpg'
+        ],
+        // Ajoutez d'autres témoignages
+    ];
+
+    return view('apropos.about', compact('teamMembers', 'testimonials'));
+}
+
 
     /**
      * Show the form for creating a new resource.

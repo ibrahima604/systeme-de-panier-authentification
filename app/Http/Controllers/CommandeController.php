@@ -11,7 +11,12 @@ class CommandeController extends Controller
      */
     public function index()
     {
-        //
+        $panier=session('panier', []);
+        $total=0;
+        foreach ($panier as $item) {
+            $total += $item['prix'] * $item['quantite'];
+        }
+        return view('commandes.index',compact('total'));
     }
 
     /**

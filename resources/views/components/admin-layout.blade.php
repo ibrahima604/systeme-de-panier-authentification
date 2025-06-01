@@ -17,19 +17,19 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-gray-100">
+<body class="font-sans antialiased bg-gray-400">
     <div class="min-h-screen">
         @include('layouts.admin-navigation')
 
         @if (isset($header))
-            <header class="bg-white shadow">
+            <header class="bg-white shadow mt-12">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
             </header>
         @endif
 
-        <main class="py-10 px-6 sm:px-10 bg-white max-w-7xl mx-auto rounded-lg shadow-md">
+        <main class="py-10 px-6 sm:px-10 bg-gray-400 max-w-7xl mx-auto rounded-lg shadow-md">
             {{ $slot }}
         </main>
         <footer>
