@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center mt-20">
             <h2 class="font-bold text-2xl text-gray-900 dark:text-white">
                 {{ __('Tableau de bord') }}
             </h2>
@@ -10,7 +10,7 @@
         </div>
     </x-slot>
 
-    <div class="py-10 bg-gray-100 dark:bg-gray-900 min-h-screen">
+    <div class="py-10 bg-gray-400 dark:bg-gray-900 min-h-screen ">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <!-- Carte de bienvenue -->
@@ -23,24 +23,7 @@
                 </p>
             </div>
 
-            <!-- Widget de contenu personnalisé -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Exemples de widgets -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-5">
-                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">🛍️ Mes commandes</h4>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm">Consultez l’historique de vos achats et suivez vos livraisons en temps réel.</p>
-                </div>
-
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-5">
-                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">🧾 Factures</h4>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm">Téléchargez vos factures ou consultez les détails de vos paiements.</p>
-                </div>
-
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-5">
-                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">⚙️ Paramètres</h4>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm">Gérez votre profil, vos préférences et la sécurité de votre compte.</p>
-                </div>
-            </div>
+            
 
             <!-- Composant de bienvenue (si tu l’utilises encore) -->
             <x-welcome />
