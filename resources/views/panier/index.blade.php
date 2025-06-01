@@ -54,9 +54,16 @@
                 </div>
                 <h2 class="text-xl font-bold text-gray-800 mb-2">Votre panier est vide</h2>
                 <p class="text-gray-500 mb-6">Parcourez nos produits et ajoutez des articles à votre panier</p>
+                @if(!auth::check())
                 <a href="{{ url('/') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition">
                     <i class="bi bi-bag mr-2"></i> Découvrir la boutique
                 </a>
+                @else
+                 <a href="{{ route('dashboard') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition">
+                    <i class="bi bi-bag mr-2"></i> Découvrir la boutique
+                </a>
+                @endif
+
             </div>
             @else
             <!-- Liste des articles -->
