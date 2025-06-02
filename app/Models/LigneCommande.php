@@ -10,11 +10,16 @@ class LigneCommande extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'commande_id',
-        'article_id',
-        'quantite_commande',
-    ];
+   protected $fillable = [
+    'commande_id',
+    'article_id',
+    'quantite_commande',
+    'taille',
+    'couleur',
+    'prix',
+    'image'
+];
+
 
     // Une ligne de commande appartient à une commande
     public function commande()

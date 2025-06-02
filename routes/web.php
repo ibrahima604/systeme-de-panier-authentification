@@ -44,6 +44,11 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'isUser'])->group(function () {
     Route::get('/checkout', [CommandeController::class, 'index'])->name('checkout.process');
     Route::get('/checkout/success', [CommandeController::class, 'success'])->name('checkout.success');
+    Route::post('/valider-panier',[CommandeController::class,'store'])->name('valider.panier');
+    Route::get('/commande/success', function () {
+    return view('commandes.success');
+})->name('commande.success');
+
 });
 
 Route::get('email/verify', function () {
