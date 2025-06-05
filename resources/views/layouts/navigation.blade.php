@@ -24,10 +24,11 @@ $isAdmin = $user->email === config('admin.email');
                     </x-responsive-nav-link>
                     @endif
                     {{-- Commandes --}}
-        <a href="{{ route('checkout.process') }}" class="flex items-center gap-1 text-white hover:text-gray-300">
-            <i class="bi bi-bag-check-fill text-lg"></i>
-            <span class="hidden sm:inline">Commandes</span>
-        </a>
+      <a href="{{ route('commandes.client', ['id' => auth()->id()]) }}" class="flex items-center gap-1 text-white hover:text-gray-300">
+    <i class="bi bi-bag-check-fill text-lg"></i>
+    <span class="hidden sm:inline">Commandes</span>
+</a>
+
 
                     {{-- Panier --}}
                     <a href="{{ route('panier.index') }}" class="flex items-center gap-1 text-white hover:text-gray-300 relative">

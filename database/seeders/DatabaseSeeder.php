@@ -12,8 +12,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ArticleSeeder::class,
-            CouleursTableSeeder::class,
-            TaillesTableSeeder::class,
+           
         ]);
     }
 }

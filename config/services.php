@@ -46,5 +46,8 @@ return [
             'client_secret' => env('LINKEDIN_CLIENT_SECRET'),
             'redirect' => env('LINKEDIN_REDIRECT_URL'),
         ],
+    'unsplash' => [
+    'key' => env('UNSPLASH_ACCESS_KEY'),
+],
 
 ];
