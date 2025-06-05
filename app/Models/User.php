@@ -46,4 +46,7 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function commande(){
+        return $this->hasMany(Commande::class);
+    }
 }

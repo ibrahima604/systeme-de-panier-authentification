@@ -4,61 +4,62 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Article;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleSeeder extends Seeder
 {
-public function run()
-{
-    $faker = \Faker\Factory::create();
+    public function run(): void
+    {
+        $faker = \Faker\Factory::create();
 
-    $clothingTypes = ['tshirt', 'jeans', 'jacket', 'dress', 'skirt', 'shorts', 'sweater'];
-    $clothingType = $faker->randomElement($clothingTypes);
-    $color = $faker->safeColorName();
-    $uniqueId = $faker->unique()->randomNumber(5);
-    $imageUrl = $this->generateClothingImage($clothingType, $color, $uniqueId);
-    $filename = 'image_' . $uniqueId . '.jpg';
+        $clothingTypes = ['tshirt', 'jeans', 'jacket', 'dress', 'skirt', 'shorts', 'sweater'];
 
-    $this->downloadAndStoreImage($imageUrl, $filename);
+        for ($i = 0; $i < 2; $i++) {
+            $type = $faker->randomElement($clothingTypes);
+            $color = $faker->safeColorName();
+            $name = ucfirst($type) . ' ' . $faker->word . ' ' . $color;
 
-    // Enregistrer l'image dans la base de données
-    Article::create([
-        'libelle' => ucfirst($clothingType) . ' ' . $faker->word . ' ' . $color,
-        'prix' => $faker->randomFloat(2, 10, 200),
-        'description' => $faker->paragraph(),
-        'quantite' => $faker->numberBetween(1, 50),
-        'image' => $filename,
-        'created_at' => $faker->dateTimeBetween('-1 year', 'now'),
-        'updated_at' => now(),
-    ]);
-}
+            // Télécharger une image depuis Unsplash
+            $imageUrl = $this->getUnsplashImage($type);
+            $filename = uniqid('article_') . '.jpg';
+            $path = 'articles/' . $filename;
 
-/**
- * Download an image from a URL and store it in the public/images directory.
- */
-protected function downloadAndStoreImage($url, $filename)
-{
-    $imageContents = @file_get_contents($url);
-    if ($imageContents === false) {
-        // Handle error or use a default image
-        $imageContents = '';
+            try {
+                $imageContent = file_get_contents($imageUrl);
+                Storage::disk('public')->put($path, $imageContent);
+            } catch (\Exception $e) {
+                // Utiliser une image par défaut si échec
+                $defaultImage = file_get_contents("https://placehold.co/400x400?text=Image+Not+Found");
+                Storage::disk('public')->put($path, $defaultImage);
+            }
+
+            Article::create([
+                'libelle' => $name,
+                'prix' => $faker->randomFloat(2, 10, 200),
+                'description' => $faker->paragraph(),
+                'quantite' => $faker->numberBetween(1, 50),
+                'image' => $path, // accessible via storage/articles/filename
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
-    $imagePath = public_path('images/' . $filename);
-    // Ensure the directory exists
-    if (!file_exists(dirname($imagePath))) {
-        mkdir(dirname($imagePath), 0755, true);
+
+    protected function getUnsplashImage(string $query): string
+    {
+        $key = config('services.unsplash.key');
+
+        $response = Http::get("https://api.unsplash.com/photos/random", [
+            'query' => $query,
+            'client_id' => $key,
+            'orientation' => 'squarish'
+        ]);
+
+        if ($response->successful()) {
+            return $response->json()['urls']['regular'];
+        }
+
+        throw new \Exception('Failed to fetch image from Unsplash');
     }
-    file_put_contents($imagePath, $imageContents);
-}
-
-/**
- * Generate a fake clothing image URL.
- */
-protected function generateClothingImage($clothingType, $color, $uniqueId)
-{
-    // You can use a placeholder image service like Lorem Picsum or placehold.co
-    // Here is an example using placehold.co with text
-    $text = urlencode(ucfirst($clothingType) . " " . $color);
-    return "https://placehold.co/400x400/{$color}/white?text={$text}";
-}
-
 }

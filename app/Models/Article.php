@@ -40,5 +40,10 @@ public function couleursAvecImages()
                 ->withPivot('image')
                 ->withTimestamps();
 }
+public function lignes()
+{
+    return $this->hasMany(LigneCommande::class);
+}
+
 
 }

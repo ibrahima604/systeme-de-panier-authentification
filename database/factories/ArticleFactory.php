@@ -3,12 +3,11 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class ArticleFactory extends Factory
 {
-    // Liste de types de vêtements
     private $clothingTypes = [
         't-shirt', 'jeans', 'dress', 'jacket', 'sweater',
         'shirt', 'skirt', 'shorts', 'coat', 'hoodie'
@@ -16,42 +15,44 @@ class ArticleFactory extends Factory
 
     public function definition(): array
     {
-        $clothingType = $this->faker->randomElement($this->clothingTypes);
+        $type = $this->faker->randomElement($this->clothingTypes);
         $color = $this->faker->safeColorName();
-        $uniqueId = $this->faker->unique()->randomNumber(5);
+        $uniqueId = uniqid();
+        $filename = "articles/{$type}_{$color}_{$uniqueId}.jpg";
 
         return [
-            'libelle' => ucfirst($clothingType) . ' ' . $this->faker->word . ' ' . $color,
+            'libelle' => ucfirst($type) . ' ' . $this->faker->word . ' ' . $color,
             'prix' => $this->faker->randomFloat(2, 10, 200),
             'description' => $this->faker->paragraph(),
             'quantite' => $this->faker->numberBetween(1, 50),
-            'image' => $this->generateClothingImage($clothingType, $color, $uniqueId),
+            'image' => $this->fetchAndStoreImage($type, $filename),
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'updated_at' => now(),
         ];
     }
 
-    /**
-     * Génère une URL d'image réaliste de vêtement depuis Unsplash
-     */
-    private function generateClothingImage(string $type, string $color, int $uniqueId): string
+    private function fetchAndStoreImage(string $query, string $filename): string
     {
-        // Construction des mots-clés de recherche pour Unsplash
-        $keywords = implode(',', [$type, 'clothing', $color, 'fashion', 'apparel']);
+        $key = config('services.unsplash.key');
 
-        // Unsplash Source API avec `sig` pour obtenir des images variées
-        return "https://source.unsplash.com/600x800/?{$keywords}&sig={$uniqueId}";
+        try {
+            $response = Http::get('https://api.unsplash.com/photos/random', [
+                'query' => $query,
+                'client_id' => $key,
+                'orientation' => 'squarish'
+            ]);
+
+            if ($response->successful()) {
+                $imageUrl = $response->json()['urls']['regular'];
+                $imageContent = file_get_contents($imageUrl);
+                Storage::disk('public')->put($filename, $imageContent);
+
+                return $filename;
+            }
+        } catch (\Exception $e) {
+            // Échec de récupération → retourne image par défaut
+        }
+
+        return 'default.jpg';
     }
-
-    private function downloadAndStoreImage(string $url, string $filename): string
-{
-    $client = new Client();
-    $response = $client->get($url);
-    $imageContent = $response->getBody()->getContents();
-
-    // Stocker l'image dans le répertoire storage/app/public
-    Storage::disk('public')->put($filename, $imageContent);
-
-    return $filename;
-}
 }

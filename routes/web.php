@@ -13,6 +13,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\SocialiteAuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FactureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +49,13 @@ Route::middleware(['auth', 'isUser'])->group(function () {
     Route::get('/commande/success', function () {
     return view('commandes.success');
 })->name('commande.success');
+Route::get('/clients/{id}/commandes', [CommandeController::class, 'commandesClient'])->name('commandes.client');
+Route::get('/commandes/{id}', [CommandeController::class, 'show'])->name('commandes.show');
+Route::delete('/commandes/{id}',[CommandeController::class,'destroy'])->name('commande.delete');
+Route::patch('/commande/toggle-status/{id}', [CommandeController::class, 'toggleStatus'])->name('commande.toggleStatus');
+Route::get('/commande/{id}/facture', [CommandeController::class, 'generateFacture'])->name('commande.facture');
+Route::get('/facture', [FactureController::class, 'generate']);
+
 
 });
 
