@@ -188,7 +188,7 @@ use Illuminate\Support\Facades\Auth;
                                     </div>
 <!-- Actions de la commande -->
 <div class="flex justify-end space-x-3 mt-4">
-    @if($commande->status === 'en cours')
+    @if($commande->status === 'en attente')
         <form method="POST" action="{{ route('commande.toggleStatus', $commande->id) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?');">
             @csrf
             @method('PATCH')

@@ -50,7 +50,7 @@
             <div>
                 <h3 class="text-sm font-semibold text-gray-200 uppercase tracking-wider mb-4">Service Client</h3>
                 <ul class="space-y-3">
-                    <li><a href="#" class="text-gray-400 hover:text-white text-sm">Contactez-nous</a></li>
+                    <li><a href="{{route('support.contact')}}" class="text-gray-400 hover:text-white text-sm">Contactez-nous</a></li>
                     <li><a href="#" class="text-gray-400 hover:text-white text-sm">FAQ</a></li>
                     <li><a href="#" class="text-gray-400 hover:text-white text-sm">Livraison</a></li>
                     <li><a href="#" class="text-gray-400 hover:text-white text-sm">Retours</a></li>

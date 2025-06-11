@@ -12,8 +12,11 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\SocialiteAuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminCommandeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FactureController;
+use App\Http\Controllers\SupportController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +58,9 @@ Route::delete('/commandes/{id}',[CommandeController::class,'destroy'])->name('co
 Route::patch('/commande/toggle-status/{id}', [CommandeController::class, 'toggleStatus'])->name('commande.toggleStatus');
 Route::get('/commande/{id}/facture', [CommandeController::class, 'generateFacture'])->name('commande.facture');
 Route::get('/facture', [FactureController::class, 'generate']);
-
+Route::get('/support/contact',[SupportController::class,'index'] )->name('support.contact');
+Route::post('/support/message', [SupportController::class, 'envoyerMessage'])
+    ->name('support.message');
 
 });
 
@@ -95,6 +100,16 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
 
     Route::get('/admin/articles/{article}/variantes/create', [VarianteController::class, 'create'])->name('admin.articles.variantes.create');
     Route::post('/admin/articles/{article}/variantes', [VarianteController::class, 'store'])->name('admin.articles.variantes.store');
+    Route::get('/articles/generer-ia', [AdminArticleController::class, 'generateWithAI'])->name('articles.generate.ia');
+    Route::get('/commandes',[AdminCommandeController::class,'index'])->name('admin.commandes');
+    Route::get('/commandes/{id}', [AdminCommandeController::class, 'show'])->name('commandes.show');
+    Route::put('/commandes/{id}', [AdminCommandeController::class, 'update'])->name('commandes.update');
+    Route::delete('/commandes/{id}', [AdminCommandeController::class, 'destroy'])->name('commandes.destroy');
+    Route::patch('/commandes/{commande}/status', [AdminCommandeController::class, 'updateStatus'])->name('commandes.updateStatus');
+    Route::post('/admin/repondre-message', [SupportController::class, 'repondreMessage'])->name('admin.repondre-message');
+
+
+
 });
 
 Route::get('/panier', [CartController::class, 'index'])->name('panier.index');
@@ -105,12 +120,9 @@ Route::delete('/panier/supprimer/{id}', [CartController::class, 'supprimer'])->n
 Route::delete('/panier/vider', [CartController::class, 'vider'])->name('panier.vider');
 Route::post('/panier/changer-taille', [CartController::class, 'changerTaille'])->name('panier.changerTaille');
 Route::post('/panier/changer-couleur', [CartController::class, 'changerCouleur'])->name('panier.changerCouleur');
-
-Route::get('/articles/generer-ia', [AdminArticleController::class, 'generateWithAI'])->name('articles.generate.ia');
 Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
-
 Route::get('/recherche-ajax', [ArticleController::class, 'rechercheAjax'])->name('recherche-ajax');
-
 Route::get('/about', [UserController::class, 'about'])->name('about');
+
 
 require __DIR__ . '/auth.php';

@@ -25,7 +25,7 @@
           <span>Utilisateurs</span>
         </a>
 
-        <a href="#" class="flex items-center space-x-2 px-3 py-2 hover:text-white hover:bg-gray-700 rounded transition">
+        <a href="{{route('admin.commandes')}}" class="flex items-center space-x-2 px-3 py-2 hover:text-white hover:bg-gray-700 rounded transition">
           <i class="bi bi-cart text-gray-300"></i>
           <span>Commandes</span>
         </a>
