@@ -72,7 +72,7 @@ public function store(Request $request)
         // 2. Création de la commande
         $commande = Commande::create([
             'adresse' => "$adresse, $ville, $pays",
-            'status' => 'en cours',
+            'status' => 'en attente',
             'mode_paiement' => $mode_paiement,
             'user_id' => Auth::id(),
         ]);
@@ -214,7 +214,7 @@ public function toggleStatus($id)
     }
 
     if ($commande->status === 'annulé') {
-        $commande->status = 'en cours';
+        $commande->status = 'en attente';
         $message = 'La commande a été réactivée avec succès.';
         $commande->save();
 
@@ -224,7 +224,7 @@ public function toggleStatus($id)
             \Log::error("Erreur envoi mail réactivation commande: ".$e->getMessage());
         }
 
-    } elseif ($commande->status === 'en cours') {
+    } elseif ($commande->status === 'en attente') {
         $commande->status = 'annulé';
         $message = 'La commande a été annulée avec succès.';
         $commande->save();
