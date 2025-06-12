@@ -30,103 +30,120 @@ class CartController extends Controller
      */
     public function create() {}
 
-    public function ajouter(Request $request, $id)
-    {
-        $article = Article::findOrFail($id);
+   public function ajouter(Request $request, $id)
+{
+    $article = Article::findOrFail($id);
 
-        $tailleId = $request->input('taille_id');
-        $couleurId = $request->input('couleur_id');
-        $quantite=$request->input('quantite',1);
+    $tailleId = $request->input('taille_id');
+    $couleurId = $request->input('couleur_id');
+    $quantite = $request->input('quantite', 1);
 
-        // Initialisation pour éviter les erreurs de portée
-        $Taille = [];
-        $TailleIDS = [];
-        $Couleur = [];
-        $CouleurIDS = [];
-        $imageArticle = [];
+    // Initialisation pour éviter les erreurs de portée
+    $Taille = [];
+    $TailleIDS = [];
+    $Couleur = [];
+    $CouleurIDS = [];
+    $imageArticle = [];
 
-        $panier = session()->get('panier', []);
+    $panier = session()->get('panier', []);
 
-        $key = $id . '-' . ($tailleId ?? '0') . '-' . ($couleurId ?? '0');
+    $key = $id . '-' . ($tailleId ?? '0') . '-' . ($couleurId ?? '0');
 
-        if (isset($panier[$key])) {
-            $panier[$key]['quantite']++;
-        } else {
-            // Gestion de la taille
-            if ($tailleId) {
-                $VarianteTaille = $article->variantes()->where('taille_id', $tailleId)->first();
-                $tailleNom = $VarianteTaille && $VarianteTaille->taille ? $VarianteTaille->taille->nom : 'Taille inconnue';
-            } else {
-                $variantes = $article->variantes()->whereNotNull('taille_id')->get();
-                foreach ($variantes as $variante) {
-                    if ($variante->taille && !in_array($variante->taille_id, $TailleIDS)) {
-                        $TailleIDS[] = $variante->taille_id;
-                        $Taille[] = $variante->taille->nom;
-                    }
-                }
-                $tailleId = 0;
-                $tailleNom = 'Taille par défaut';
-            }
-
-            // Gestion de la couleur
-            if ($couleurId) {
-                $VarianteCouleur = $article->variantes()->where('couleur_id', $couleurId)->first();
-                $couleurNom = $VarianteCouleur && $VarianteCouleur->couleur ? $VarianteCouleur->couleur->nom : 'Couleur inconnue';
-            } else {
-                $variantes = $article->variantes()->whereNotNull('couleur_id')->get();
-                foreach ($variantes as $variante) {
-                    if ($variante->couleur && !in_array($variante->couleur_id, $CouleurIDS)) {
-                        $CouleurIDS[] = $variante->couleur_id;
-                        $Couleur[] = $variante->couleur->nom;
-                    }
-                }
-                $couleurId = 0;
-                $couleurNom = 'Couleur par défaut';
-
-                // Récupération des images associées aux couleurs
-                $variantesImage = $article->couleursAvecImages()->whereNotNull('image')->get();
-                foreach ($variantesImage as $varianteImage) {
-                    if ($varianteImage->pivot->image && !in_array($varianteImage->pivot->image, $imageArticle)) {
-                        $imageArticle[] = $varianteImage->pivot->image;
-                    }
-                }
-            }
-
-            // Récupération de l'image de la variante si disponible
-            $varianteImage = $article->couleursAvecImages()->where('couleur_id', $couleurId)->first();
-            $image = $varianteImage && $varianteImage->pivot->image ? $varianteImage->pivot->image : $article->image;
-
-            // Ajout de l'article au panier
-            $panier[$key] = [
-                'article_id' => $id,
-                'libelle' => $article->libelle,
-                'prix' => $article->prix,
-                'image' => $image,
-                'quantite' => $quantite,
-                'taille' => $tailleNom,
-                'couleur' => $couleurNom,
-                'taille_id' => $tailleId,
-                'couleur_id' => $couleurId,
-                'couleurArticle' => $Couleur,
-                'tailleArticle' => $Taille,
-                'couleurArticleIDS' => $CouleurIDS,
-                'tailleArticleIDS' => $TailleIDS,
-                'imageArticle' => $imageArticle,
-            ];
+    // Trouver la variante correspondante si taille ou couleur est sélectionnée
+    $varianteId = null;
+    if ($tailleId || $couleurId) {
+        $query = $article->variantes();
+        if ($tailleId) {
+            $query->where('taille_id', $tailleId);
         }
-
-        // Calcul du nombre total d'articles dans le panier
-        $cartCount = array_sum(array_column($panier, 'quantite'));
-        session()->put('cart_count', $cartCount);
-
-
-        session()->put('panier', $panier);
-        if (auth()->check()) {
-            return redirect()->route('dashboard')->with('success', 'Article ajouté au panier.');
+        if ($couleurId) {
+            $query->where('couleur_id', $couleurId);
         }
-        // Redirection vers la page d'accueil (ou une autre route nommée)
-        return redirect('/')->with('success', 'Article ajouté au panier.');
+        $variante = $query->first();
+        $varianteId = $variante ? $variante->id : null;
     }
+
+    if (isset($panier[$key])) {
+        $panier[$key]['quantite']++;
+        if ($varianteId) {
+            $panier[$key]['variante_id'] = $varianteId;
+        }
+    } else {
+        // Gestion de la taille
+        if ($tailleId) {
+            $VarianteTaille = $article->variantes()->where('taille_id', $tailleId)->first();
+            $tailleNom = $VarianteTaille && $VarianteTaille->taille ? $VarianteTaille->taille->nom : 'Taille inconnue';
+        } else {
+            $variantes = $article->variantes()->whereNotNull('taille_id')->get();
+            foreach ($variantes as $variante) {
+                if ($variante->taille && !in_array($variante->taille_id, $TailleIDS)) {
+                    $TailleIDS[] = $variante->taille_id;
+                    $Taille[] = $variante->taille->nom;
+                }
+            }
+            $tailleId = 0;
+            $tailleNom = 'Taille par défaut';
+        }
+
+        // Gestion de la couleur
+        if ($couleurId) {
+            $VarianteCouleur = $article->variantes()->where('couleur_id', $couleurId)->first();
+            $couleurNom = $VarianteCouleur && $VarianteCouleur->couleur ? $VarianteCouleur->couleur->nom : 'Couleur inconnue';
+        } else {
+            $variantes = $article->variantes()->whereNotNull('couleur_id')->get();
+            foreach ($variantes as $variante) {
+                if ($variante->couleur && !in_array($variante->couleur_id, $CouleurIDS)) {
+                    $CouleurIDS[] = $variante->couleur_id;
+                    $Couleur[] = $variante->couleur->nom;
+                }
+            }
+            $couleurId = 0;
+            $couleurNom = 'Couleur par défaut';
+
+            // Récupération des images associées aux couleurs
+            $variantesImage = $article->couleursAvecImages()->whereNotNull('image')->get();
+            foreach ($variantesImage as $varianteImage) {
+                if ($varianteImage->pivot->image && !in_array($varianteImage->pivot->image, $imageArticle)) {
+                    $imageArticle[] = $varianteImage->pivot->image;
+                }
+            }
+        }
+
+        // Récupération de l'image de la variante si disponible
+        $varianteImage = $article->couleursAvecImages()->where('couleur_id', $couleurId)->first();
+        $image = $varianteImage && $varianteImage->pivot->image ? $varianteImage->pivot->image : $article->image;
+
+        // Ajout de l'article au panier
+        $panier[$key] = [
+            'article_id' => $id,
+            'libelle' => $article->libelle,
+            'prix' => $article->prix,
+            'image' => $image,
+            'quantite' => $quantite,
+            'taille' => $tailleNom,
+            'couleur' => $couleurNom,
+            'taille_id' => $tailleId,
+            'couleur_id' => $couleurId,
+            'couleurArticle' => $Couleur,
+            'tailleArticle' => $Taille,
+            'couleurArticleIDS' => $CouleurIDS,
+            'tailleArticleIDS' => $TailleIDS,
+            'imageArticle' => $imageArticle,
+            'variante_id' => $varianteId // Ajout de l'ID de la variante
+        ];
+    }
+
+    // Calcul du nombre total d'articles dans le panier
+    $cartCount = array_sum(array_column($panier, 'quantite'));
+    session()->put('cart_count', $cartCount);
+
+    session()->put('panier', $panier);
+    if (auth()->check()) {
+        return redirect()->route('dashboard')->with('success', 'Article ajouté au panier.');
+    }
+    // Redirection vers la page d'accueil (ou une autre route nommée)
+    return redirect('/')->with('success', 'Article ajouté au panier.');
+}
 
     /**
      * Store a newly created resource in storage.
