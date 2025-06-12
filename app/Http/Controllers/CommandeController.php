@@ -79,21 +79,22 @@ public function store(Request $request)
 
         // 3. Création des lignes de commande
           $total = 0;
-        foreach ($panier as $item) {
-            LigneCommande::create([
-                'commande_id' => $commande->id,
-                'article_id' => $item['article_id'],
-                'quantite_commande' => $item['quantite'],
-                'taille' => $item['taille'] ?? null,
-                'couleur' => $item['couleur'] ?? null,
-                'prix' => $item['prix'],
-                'image' => $item['image'] ?? null,
-            ]);
-        }
-      
+
 foreach ($panier as $item) {
+    LigneCommande::create([
+        'commande_id' => $commande->id,
+        'article_id' => $item['article_id'],
+        'variante_id' => $item['variante_id'] ?? null, // Ajout du champ ici
+        'quantite_commande' => $item['quantite'],
+        'taille' => $item['taille'] ?? null,
+        'couleur' => $item['couleur'] ?? null,
+        'prix' => $item['prix'],
+        'image' => $item['image'] ?? null,
+    ]);
+
     $total += $item['prix'] * $item['quantite'];
 }
+
 
 
         DB::commit();

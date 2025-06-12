@@ -17,7 +17,8 @@ class LigneCommande extends Model
     'taille',
     'couleur',
     'prix',
-    'image'
+    'image',
+    'variante_id'
 ];
 
 

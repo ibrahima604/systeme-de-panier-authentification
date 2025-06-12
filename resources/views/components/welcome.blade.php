@@ -76,6 +76,26 @@
         .burger-open .burger-line:nth-child(3) {
             transform: translateY(-8px) rotate(-45deg);
         }
+        /* Styles pour le stock */
+        .stock-bar {
+            transition: all 0.3s ease;
+        }
+        .stock-low {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        .stock-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .stock-icon {
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 
@@ -410,6 +430,43 @@
                     </a>
                     <p class="text-sm text-gray-500 mb-3">{{ Str::limit($article->description, 70) }}</p>
 
+                    <!-- Affichage du stock -->
+                    <div class="mb-3">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Stock disponible:</span>
+                            <span class="font-medium stock-indicator"
+                                  :class="{
+                                      'text-green-600': {{ $article->quantite }} > 5,
+                                      'text-yellow-600 stock-low': {{ $article->quantite }} > 0 && {{ $article->quantite }} <= 5,
+                                      'text-red-600': {{ $article->quantite }} == 0
+                                  }">
+                                @if($article->quantite > 5)
+                                <i class="bi bi-check-circle-fill stock-icon"></i>
+                                @elseif($article->quantite > 0)
+                                <i class="bi bi-exclamation-triangle-fill stock-icon"></i>
+                                @else
+                                <i class="bi bi-x-circle-fill stock-icon"></i>
+                                @endif
+                                {{ $article->quantite }} pièce(s)
+                            </span>
+                        </div>
+                        <!-- Barre de progression du stock -->
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
+                            <div class="h-2 rounded-full stock-bar" 
+                                 :class="{
+                                     'bg-green-500': {{ $article->quantite }} > 5,
+                                     'bg-yellow-500 stock-low': {{ $article->quantite }} > 0 && {{ $article->quantite }} <= 5,
+                                     'bg-red-500': {{ $article->quantite }} == 0
+                                 }"
+                                 style="width: {{ min(100, $article->quantite / ($article->quantite + 10) * 100) }}%"></div>
+                        </div>
+                        @if($article->quantite > 0 && $article->quantite <= 5)
+                        <p class="text-xs text-yellow-600 mt-1">Plus que {{ $article->quantite }} disponible(s) - Commandez vite !</p>
+                        @elseif($article->quantite == 0)
+                        <p class="text-xs text-red-600 mt-1">Rupture de stock - Réapprovisionnement en cours</p>
+                        @endif
+                    </div>
+
                     <div class="mt-auto">
                         <div class="flex items-center gap-2 mb-3">
                             <span class="text-lg font-bold text-indigo-600">
@@ -429,9 +486,12 @@
 
                             <button type="submit"
                                     class="w-full text-center bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
-                                    :disabled="!selectedSizeId && {{ $article->variantes->whereNotNull('taille_id')->count() > 0 ? 'true' : 'false' }}"
-                                    :class="{'opacity-50 cursor-not-allowed': !selectedSizeId && {{ $article->variantes->whereNotNull('taille_id')->count() > 0 ? 'true' : 'false' }}}">
-                                Ajouter au panier
+                                    :disabled="(!selectedSizeId && {{ $article->variantes->whereNotNull('taille_id')->count() > 0 ? 'true' : 'false' }}) || {{ $article->quantite == 0 ? 'true' : 'false' }}"
+                                    :class="{
+                                        'opacity-50 cursor-not-allowed': (!selectedSizeId && {{ $article->variantes->whereNotNull('taille_id')->count() > 0 ? 'true' : 'false' }}) || {{ $article->quantite == 0 ? 'true' : 'false' }},
+                                        'bg-gray-500': {{ $article->quantite == 0 ? 'true' : 'false' }}
+                                    }">
+                                {{ $article->quantite == 0 ? 'En rupture de stock' : 'Ajouter au panier' }}
                             </button>
                         </form>
                     </div>
