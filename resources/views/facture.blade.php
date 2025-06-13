@@ -267,11 +267,11 @@
             </div>
             <div class="company-info">
                 <img src="{{ public_path('images/logo.png') }}" alt="Logo" class="company-logo">
-                <div class="company-name">{{ config('app.name') }}</div>
+                <div class="company-name">D2Market (Diallo&Diaby)</div>
                 <div class="company-details">
                     123 Rue de Commerce, Casablanca<br>
                     Tél: 06 32 68 40 91<br>
-                    Email: contact@entreprise.com<br>
+                    Email: contact@d2market.com<br>
                     SIRET: 123 456 789 00010
                 </div>
             </div>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -505,6 +506,8 @@
             {{ $articles->links() }}
         </div>
     </main>
+    <canvas id="topProductsChart" width="600" height="400"></canvas>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         function appData() {
@@ -549,6 +552,39 @@
                 }
             };
         }
+
+
+        //pour le graphe 
+        // Récupérer les données PHP dans JS via Blade
+        const labels = @json($labels);
+        const data = @json($data);
+
+        const ctx = document.getElementById('topProductsChart').getContext('2d');
+
+        const chart = new Chart(ctx, {
+            type: 'bar', // type de graphique
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Quantité vendue',
+                    data: data,
+                    backgroundColor: 'rgba(79, 70, 229, 0.7)', // violet clair
+                    borderColor: 'rgba(79, 70, 229, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1 // utile si ce sont des quantités entières
+                        }
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>

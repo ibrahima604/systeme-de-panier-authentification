@@ -19,7 +19,7 @@ $isAdmin = $user->email === config('admin.email');
             <div class="hidden lg:flex items-center gap-6 ml-auto">
                 @unless($isAdmin)
                     @if(request()->path() !== 'profile')
-                    <x-responsive-nav-link :href="'#about'" class="text-white hover:text-gray-300 flex items-center gap-1">
+                    <x-responsive-nav-link :href="route('about')" class="text-white hover:text-gray-300 flex items-center gap-1">
                         <i class="bi bi-info-circle"></i> {{ __('À propos') }}
                     </x-responsive-nav-link>
                     @endif
