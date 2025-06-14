@@ -29,7 +29,7 @@ class Welcome extends Component
             $q->whereRaw('LOWER(libelle) LIKE ?', ['%' . strtolower($query) . '%'])
               ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($query) . '%']);
         })
-        ->paginate(8);
+        ->paginate(20);
 
         if (!$isAjax) {
             $articleIds = collect($this->articles->items())->pluck('id')->toArray();
