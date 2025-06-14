@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\OpenAIService;
+use Database\Seeders\ArticleSeeder;
+
+
 
 
 class AdminArticleController extends Controller
@@ -164,5 +167,17 @@ class AdminArticleController extends Controller
             Log::error('Error generating article with AI:', ['error' => $e->getMessage()]);
             return back()->with('error', 'Erreur IA : ' . $e->getMessage());
         }
+    }
+     public function runArticleSeeder()
+    {
+        // Option 1 : Instancier et lancer directement la méthode run()
+        $seeder = new ArticleSeeder();
+        $seeder->run();
+
+        // Option 2 : Ou exécuter via Artisan (recommandé pour que ça fasse pareil qu'en CLI)
+        // Artisan::call('db:seed', ['--class' => ArticleSeeder::class]);
+
+ return redirect()->route('admin.articles.index')->with('success', 'Article créé avec succès');
+
     }
 }

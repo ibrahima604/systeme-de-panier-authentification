@@ -100,13 +100,16 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
 
     Route::get('/admin/articles/{article}/variantes/create', [VarianteController::class, 'create'])->name('admin.articles.variantes.create');
     Route::post('/admin/articles/{article}/variantes', [VarianteController::class, 'store'])->name('admin.articles.variantes.store');
-    Route::get('/articles/generer-ia', [AdminArticleController::class, 'generateWithAI'])->name('articles.generate.ia');
+   // Route::get('/articles/generer-ia', [AdminArticleController::class, 'generateWithAI'])->name('articles.generate.ia');
     Route::get('/commandes',[AdminCommandeController::class,'index'])->name('admin.commandes');
     Route::get('/commandes/{id}', [AdminCommandeController::class, 'show'])->name('commandes.show');
     Route::put('/commandes/{id}', [AdminCommandeController::class, 'update'])->name('commandes.update');
     Route::delete('/commandes/{id}', [AdminCommandeController::class, 'destroy'])->name('commandes.destroy');
     Route::patch('/commandes/{commande}/status', [AdminCommandeController::class, 'updateStatus'])->name('commandes.updateStatus');
     Route::post('/admin/repondre-message', [SupportController::class, 'repondreMessage'])->name('admin.repondre-message');
+
+    Route::get('/admin/seed-articles', [AdminArticleController::class, 'runArticleSeeder']) // bien sécuriser la route !
+    ->name('admin.seed.articles');
 
 
 

@@ -506,7 +506,7 @@
             {{ $articles->links() }}
         </div>
     </main>
-    <canvas id="topProductsChart" width="600" height="400"></canvas>
+    <canvas id="topProductsChart" width="600" height="400" ></canvas>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -555,31 +555,58 @@
 
 
         //pour le graphe 
-        // Récupérer les données PHP dans JS via Blade
-        const labels = @json($labels);
+       const labels = @json($labels);
         const data = @json($data);
 
         const ctx = document.getElementById('topProductsChart').getContext('2d');
 
         const chart = new Chart(ctx, {
-            type: 'bar', // type de graphique
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Quantité vendue',
                     data: data,
-                    backgroundColor: 'rgba(79, 70, 229, 0.7)', // violet clair
-                    borderColor: 'rgba(79, 70, 229, 1)',
-                    borderWidth: 1
+                    backgroundColor: 'rgba(99, 102, 241, 0.7)', // Indigo 500 (plus pro)
+                    borderColor: 'rgba(79, 70, 229, 1)', // Indigo 600
+                    borderWidth: 1,
+                    barThickness: 25, // Minceur des barres
+                    maxBarThickness: 30, // Limite max
+                    borderRadius: 6 // Coins arrondis
                 }]
             },
             options: {
                 responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#4f46e5',
+                        titleColor: '#fff',
+                        bodyColor: '#fff'
+                    }
+                },
                 scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        },
+                        barPercentage: 0.6, // Largeur relative des barres (0.0 - 1.0)
+                        categoryPercentage: 0.1 // Espace occupé par groupe (0.0 - 1.0)
+                    },
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1 // utile si ce sont des quantités entières
+                            stepSize: 1,
+                            font: {
+                                size: 12
+                            }
                         }
                     }
                 }
