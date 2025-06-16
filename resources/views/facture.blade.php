@@ -6,247 +6,172 @@
     <title>Facture {{ $numero_facture }}</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
             color: #333;
-            line-height: 1.6;
-            padding: 30px;
-            background-color: #f9fafb;
+            background-color: #f4f4f5;
+            padding: 20px;
         }
+
         .invoice-container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 720px;
+            margin: auto;
             background: white;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
-            padding: 40px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 24px 32px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
         }
+
         .header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid #eaeef2;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
         }
-        .invoice-header {
-            flex: 1;
+
+        .invoice-header, .company-info {
+            width: 48%;
         }
+
         .invoice-title {
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 700;
-            color: #111827;
-            margin-bottom: 5px;
-            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+            color: #1f2937;
         }
+
         .invoice-number {
-            display: inline-block;
             background: #f3f4f6;
-            padding: 5px 10px;
-            border-radius: 6px;
             font-weight: 500;
-            margin-top: 5px;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
         }
-        .company-info {
-            text-align: right;
-        }
+
         .company-logo {
-            height: 50px;
-            margin-bottom: 15px;
+            height: 40px;
+            margin-bottom: 8px;
         }
-        .company-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 5px;
-        }
-        .company-details {
+
+        .company-details,
+        .client-details,
+        .payment-info,
+        .notes {
+            font-size: 12px;
             color: #6b7280;
-            line-height: 1.5;
+            line-height: 1.4;
         }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
         .client-payment-container {
             display: flex;
-            gap: 30px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
             margin-bottom: 30px;
         }
+
         .client-info, .payment-info {
-            flex: 1;
-            background: #f9fafb;
-            padding: 20px;
-            border-radius: 8px;
+            width: 48%;
         }
-        .section-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
-        .section-title:before {
-            content: "";
-            display: inline-block;
-            width: 4px;
-            height: 16px;
-            background: #4f46e5;
-            margin-right: 10px;
-            border-radius: 2px;
-        }
-        .client-name {
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 5px;
-        }
-        .client-details {
-            color: #6b7280;
-            line-height: 1.6;
-        }
-        .payment-method {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .payment-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 10px;
-            color: #4f46e5;
-        }
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .status-paid {
-            background-color: #ecfdf5;
-            color: #059669;
-        }
-        .status-pending {
-            background-color: #fffbeb;
-            color: #d97706;
-        }
-        .status-cancelled {
-            background-color: #fee2e2;
-            color: #dc2626;
-        }
+
         .items-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 30px 0;
+            border-collapse: collapse;
+            margin-bottom: 30px;
         }
-        .items-table thead th {
-            background-color: #f9fafb;
-            color: #6b7280;
-            text-align: left;
-            padding: 12px 15px;
-            font-weight: 600;
-            border-bottom: 1px solid #eaeef2;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .items-table tbody tr {
-            transition: background 0.2s;
-        }
-        .items-table tbody tr:hover {
-            background-color: #f9fafb;
-        }
+
+        .items-table thead th,
         .items-table td {
-            padding: 15px;
-            border-bottom: 1px solid #eaeef2;
-            vertical-align: middle;
+            font-size: 12px;
+            padding: 10px 8px;
+            border-bottom: 1px solid #e5e7eb;
         }
+
+        .product-image {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
         .product-cell {
             display: flex;
             align-items: center;
         }
-        .product-image {
-            width: 48px;
-            height: 48px;
-            object-fit: cover;
-            margin-right: 15px;
-            border-radius: 6px;
-            border: 1px solid #f3f4f6;
-        }
-        .product-name {
-            font-weight: 500;
-            margin-bottom: 3px;
-        }
-        .product-sku {
-            color: #9ca3af;
+
+        .quantity {
+            padding: 3px 8px;
             font-size: 12px;
         }
-        .quantity {
-            display: inline-block;
-            padding: 5px 10px;
-            background: #f3f4f6;
-            border-radius: 4px;
+
+        .totals-table {
+            width: 100%;
         }
-        .text-right {
+
+        .totals-table td {
+            padding: 8px;
+            font-size: 13px;
+        }
+
+        .totals-table .text-right {
             text-align: right;
         }
+
         .text-center {
             text-align: center;
         }
-        .totals-table {
-            width: 280px;
-            float: right;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 20px;
-        }
-        .totals-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #eaeef2;
-        }
-        .totals-table tr:last-child td {
-            border-bottom: none;
-        }
+
         .grand-total {
-            font-weight: 600;
-            font-size: 15px;
-            color: #111827;
-            background: #f9fafb;
-            border-radius: 0 0 8px 8px;
+            font-size: 14px;
+            font-weight: 700;
         }
-        .footer {
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid #eaeef2;
+
+        .footer, .thank-you {
             font-size: 11px;
             color: #9ca3af;
             text-align: center;
+            margin-top: 30px;
         }
-        .notes {
-            margin-top: 40px;
-            padding: 15px;
-            background: #f9fafb;
-            border-radius: 8px;
-            font-size: 12px;
-            color: #6b7280;
+
+        .status-badge {
+            font-weight: 600;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
         }
-        .thank-you {
-            text-align: center;
-            margin: 30px 0;
-            font-size: 14px;
-            color: #6b7280;
+
+        .status-paid {
+            background-color: #d1fae5;
+            color: #065f46;
         }
-        .divider {
-            height: 1px;
-            background: linear-gradient(to right, transparent, #eaeef2, transparent);
-            margin: 25px 0;
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
         }
     </style>
 </head>
 <body>
     <div class="invoice-container">
-        <!-- En-tête avec logo et info facture -->
+        <!-- En-tête -->
         <div class="header">
             <div class="invoice-header">
                 <div class="invoice-title">Facture</div>
@@ -277,7 +202,7 @@
             </div>
         </div>
 
-        <!-- Informations client et paiement -->
+        <!-- Infos client & paiement -->
         <div class="client-payment-container">
             <div class="client-info">
                 <div class="section-title">Client</div>
@@ -288,11 +213,10 @@
                     Tél: {{ $commande->user->telephone }}
                 </div>
             </div>
-            
             <div class="payment-info">
                 <div class="section-title">Paiement</div>
-                <div class="payment-method">
-                    <svg class="payment-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <div class="payment-method" style="display: flex; align-items: center; gap: 10px;">
+                    <svg class="payment-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                     </svg>
                     <div>
@@ -323,7 +247,7 @@
             </div>
         </div>
 
-        <!-- Détails des articles -->
+        <!-- Table des produits -->
         <table class="items-table">
             <thead>
                 <tr>
@@ -360,7 +284,6 @@
         </table>
 
         <!-- Totaux -->
-        <div style="clear: both;"></div>
         <table class="totals-table">
             <tr>
                 <td>Sous-total:</td>
@@ -379,8 +302,6 @@
                 <td class="text-right">{{ number_format($total, 2, ',', ' ') }} MAD</td>
             </tr>
         </table>
-
-        <div class="divider"></div>
 
         <div class="thank-you">
             Merci pour votre confiance. Pour toute question concernant cette facture, veuillez contacter notre service client.

@@ -125,7 +125,7 @@
     </div>
 
     <div style="text-align: center; margin: 30px 0;">
-        <a href="{{ route('commandes.show', $commande->id) }}" class="button">Suivre ma commande</a>
+        <a href="{{ route('client.commandes.show', $commande->id) }}" class="button">Suivre ma commande</a>
     </div>
 
     <p>Vous recevrez une notification lorsque votre commande sera expédiée.</p>
