@@ -53,7 +53,7 @@ Route::middleware(['auth', 'isUser'])->group(function () {
     return view('commandes.success');
 })->name('commande.success');
 Route::get('/clients/{id}/commandes', [CommandeController::class, 'commandesClient'])->name('commandes.client');
-Route::get('/commandes/{id}', [CommandeController::class, 'show'])->name('commandes.show');
+Route::get('/commandes/{id}', [CommandeController::class, 'show'])->name('client.commandes.show');
 Route::delete('/commandes/{id}',[CommandeController::class,'destroy'])->name('commande.delete');
 Route::patch('/commande/toggle-status/{id}', [CommandeController::class, 'toggleStatus'])->name('commande.toggleStatus');
 Route::get('/commande/{id}/facture', [CommandeController::class, 'generateFacture'])->name('commande.facture');

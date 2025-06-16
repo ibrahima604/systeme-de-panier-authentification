@@ -169,7 +169,12 @@ public function commandesClient($id)
 {
     $user = User::findOrFail($id);
     // Récupérer toutes les commandes, y compris les soft deleted
-    $commandes = $user->commande()->withTrashed()->with('lignes')->get();
+   $commandes = $user->commande()
+    ->withTrashed()
+    ->with('lignes')
+    ->orderBy('created_at', 'desc') // tri décroissant par date de création
+    ->get();
+
 
     foreach ($commandes as $commande) {
         $totalCommande = 0;

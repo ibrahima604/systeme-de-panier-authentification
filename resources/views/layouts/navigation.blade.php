@@ -99,7 +99,7 @@
                     <x-responsive-nav-link :href="route('panier.index')" class="text-white hover:bg-gray-700">
                         <i class="bi bi-cart-fill mr-2"></i> Panier ({{ session('cart_count', 0) }})
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="{{ route('commandes.client', ['id' => auth()->id()]) }}" class="text-white hover:bg-gray-700">
+                    <x-responsive-nav-link :href="route('commandes.client', ['id' => auth()->id()])" class="text-white hover:bg-gray-700">
                         <i class="bi bi-bag-check-fill mr-2"></i> Commandes
                     </x-responsive-nav-link>
 

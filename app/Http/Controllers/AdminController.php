@@ -73,7 +73,12 @@ else{
       $variationClient=$clients>0?100:0;
 }
  
-$articleEnRupture=Article::with('variantes')->where('quantite', '<',10)->count();
+$articleEnRupture = Article::where('quantite', '<', 10)
+    ->orWhereHas('variantes', function($query) {
+        $query->where('quantite', '<', 10);
+    })
+    ->count();
+
 
 
 $dernieresCommandes = Commande::with('user', 'lignes')
