@@ -224,7 +224,7 @@
                             </div>
                             <div class="flex justify-between font-semibold text-lg text-gray-900 border-t pt-2">
                                 <span>Total</span>
-                                <span>{{ number_format($total + 20, 2) }} MAD</span>
+                                <span>{{ number_format($total, 2) }} MAD</span>
                             </div>
                         </div>
                     </div>
