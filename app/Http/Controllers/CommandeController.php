@@ -26,6 +26,8 @@ class CommandeController extends Controller
     public function index()
     {
         $panier=session('panier', []);
+         // Inverser le panier pour que les éléments les plus récents soient en haut
+    $panier = array_reverse($panier);
         $total=0;
         foreach ($panier as $item) {
             $total += $item['prix'] * $item['quantite'];
