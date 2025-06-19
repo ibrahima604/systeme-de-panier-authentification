@@ -170,7 +170,7 @@ public function commandesClient($id)
     $user = User::findOrFail($id);
     // Récupérer toutes les commandes, y compris les soft deleted
    $commandes = $user->commande()
-    ->withTrashed()
+
     ->with('lignes')
     ->orderBy('created_at', 'desc') // tri décroissant par date de création
     ->get();
@@ -215,42 +215,37 @@ public function show($id)
 
 public function toggleStatus($id)
 {
-     $commande = Commande::with('lignes.article')->findOrFail($id);;
+    // Récupère uniquement les commandes non supprimées
+    $commande = Commande::with('lignes.article')->findOrFail($id);
 
     if ($commande->user_id !== auth()->id()) {
         abort(403, "Action non autorisée.");
     }
 
+    // Si la commande est déjà annulée (soft deleted), on bloque
     if ($commande->status === 'annulé') {
-        $commande->status = 'en attente';
-        $message = 'La commande a été réactivée avec succès.';
-        $commande->save();
+        abort(400, "La commande est déjà annulée.");
+    }
 
-        try {
-            Mail::to($commande->user->email)->send(new CommandeReactiveeMail($commande));
-        } catch (\Exception $e) {
-            \Log::error("Erreur envoi mail réactivation commande: ".$e->getMessage());
-        }
-
-    } elseif ($commande->status === 'en attente') {
+    // Si la commande est encore "en attente", on l'annule
+    if ($commande->status === 'en attente') {
         $commande->status = 'annulé';
-        $message = 'La commande a été annulée avec succès.';
         $commande->save();
+        $commande->delete(); // soft delete
 
         try {
             Mail::to($commande->user->email)->send(new CommandeAnnuleeMail($commande));
         } catch (\Exception $e) {
-            \Log::error("Erreur envoi mail annulation commande: ".$e->getMessage());
+            \Log::error("Erreur envoi mail annulation commande: " . $e->getMessage());
         }
 
-    } else {
-        abort(400, "Le statut de cette commande ne peut pas être modifié.");
+        return redirect()->route('commandes.client', auth()->id())
+            ->with('success', 'La commande a été annulée avec succès.');
     }
 
-    return redirect()->route('commandes.client', auth()->id())
-        ->with('success', $message);
+    // Toute autre situation n'est pas autorisée (ex: livré)
+    abort(400, "Le statut de cette commande ne permet pas de l'annuler.");
 }
-
 
 public function generateFacture($id)
 {
