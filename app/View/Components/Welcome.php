@@ -3,7 +3,7 @@
 namespace App\View\Components;
 
 use Illuminate\View\Component;
-use Illuminate\Support\Facades\DB; // N'oublie pas d'importer DB
+use Illuminate\Support\Facades\DB; 
 use App\Models\Article;
 use App\Models\ArticleCouleurImage;
 
@@ -25,6 +25,7 @@ class Welcome extends Component
             'variantes.taille',
             'couleurImages.couleur'
         ])
+         ->where('quantite', '>', 0)
         ->when($query, function ($q) use ($query) {
             $q->whereRaw('LOWER(libelle) LIKE ?', ['%' . strtolower($query) . '%'])
               ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($query) . '%']);
@@ -36,17 +37,7 @@ class Welcome extends Component
             $this->articleCouleurImages = ArticleCouleurImage::whereIn('article_id', $articleIds)->get();
         }
 
-        // Ajout de la logique topProducts ici
-        $topProducts = DB::table('ligne_commandes as lc')
-            ->join('articles as a', 'lc.article_id', '=', 'a.id')
-            ->select('a.libelle', DB::raw('SUM(lc.quantite_commande) as total_vendu'))
-            ->groupBy('a.libelle')
-            ->orderByDesc('total_vendu')
-            ->limit(10)
-            ->get();
 
-        $this->labels = $topProducts->pluck('libelle');
-        $this->data = $topProducts->pluck('total_vendu');
     }
 
     public function render()
@@ -58,8 +49,7 @@ class Welcome extends Component
         return view('components.welcome', [
             'articles' => $this->articles,
             'articleCouleurImages' => $this->articleCouleurImages,
-            'labels' => $this->labels,
-            'data' => $this->data,
+            
         ]);
     }
 }

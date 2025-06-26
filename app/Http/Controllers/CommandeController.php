@@ -80,24 +80,22 @@ public function store(Request $request)
         ]);
 
         // 3. Création des lignes de commande
-          $total = 0;
+        $total = 0;
 
-foreach ($panier as $item) {
-    LigneCommande::create([
-        'commande_id' => $commande->id,
-        'article_id' => $item['article_id'],
-        'variante_id' => $item['variante_id'] ?? null, // Ajout du champ ici
-        'quantite_commande' => $item['quantite'],
-        'taille' => $item['taille'] ?? null,
-        'couleur' => $item['couleur'] ?? null,
-        'prix' => $item['prix'],
-        'image' => $item['image'] ?? null,
-    ]);
+        foreach ($panier as $item) {
+            LigneCommande::create([
+                'commande_id' => $commande->id,
+                'article_id' => $item['article_id'],
+                'variante_id' => $item['variante_id'] ?? null,
+                'quantite_commande' => $item['quantite'],
+                'taille' => $item['taille'] ?? null,
+                'couleur' => $item['couleur'] ?? null,
+                'prix' => $item['prix'],
+                'image' => $item['image'] ?? null,
+            ]);
 
-    $total += $item['prix'] * $item['quantite'];
-}
-
-
+            $total += $item['prix'] * $item['quantite'];
+        }
 
         DB::commit();
 
@@ -105,27 +103,37 @@ foreach ($panier as $item) {
         session()->forget('panier');
         session()->forget('cart_count');
 
-        // 5. Envoi de l'email de confirmation
+        // 5. Envoi de l'e-mail de confirmation
         try {
-         
-
-           Mail::to($commande->user->email)->send(new ConfirmationCommandeMail($commande,$total));
+            Mail::to($commande->user->email)->send(new ConfirmationCommandeMail($commande, $total));
         } catch (\Exception $e) {
             \Log::error('Erreur lors de l’envoi de l’email : ' . $e->getMessage());
-           
-            die('erreur:'.$e->getMessage());
-            // Pas d'interruption : continuer vers la page de succès même si l'email échoue
+            // Pas d'interruption
         }
 
-        // 6. Redirection vers la page de succès
+        // 6. Redirection vers page de succès
         return redirect()->route('commande.success')->with('success', '🎉 Merci pour votre commande ! Un e-mail de confirmation vous a été envoyé.');
 
     } catch (\Exception $e) {
         DB::rollBack();
         \Log::error('Erreur de commande : ' . $e->getMessage());
-        return back()->with('error', 'Une erreur est survenue. Veuillez réessayer plus tard.');
+
+        // Gestion d'erreur personnalisée
+        return back()->with('error', $this->getTriggerMessage($e));
     }
 }
+
+private function getTriggerMessage(\Exception $e): string
+{
+    $message = $e->getMessage();
+
+    if (str_contains($message, 'quantite_stock_insuffisante')) {
+        return "La quantité demandée dépasse le stock disponible. Veuillez ajuster votre panier.";
+    }
+
+    return "Une erreur est survenue lors de la validation de votre commande. Veuillez réessayer.";
+}
+
     /**
      * Show the form for editing the specified resource.
      **/
