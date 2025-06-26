@@ -15,7 +15,7 @@ class ArticleSeeder extends Seeder
 
         $clothingTypes = ['tshirt', 'jeans', 'jacket', 'dress', 'skirt', 'shorts', 'sweater'];
 
-        for ($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $type = $faker->randomElement($clothingTypes);
             $color = $faker->safeColorName();
             $name = ucfirst($type) . ' ' . $faker->word . ' ' . $color;

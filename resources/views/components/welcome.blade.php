@@ -308,7 +308,7 @@
                 <template x-for="result in results" :key="result.id">
                     <a :href="`/articles/${result.id}`"
                        class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 flex items-center">
-                        <img :src="`/storage/${result.image}`"
+                        <img loading="lazy" :src="`/storage/${result.image}`"
                              :alt="result.libelle"
                              class="w-10 h-10 object-cover rounded mr-3">
                         <div>
@@ -341,7 +341,7 @@
                  }">
                 <!-- Image principale avec overlay -->
                 <div class="relative overflow-hidden group">
-                    <img :src="selectedImage" alt="{{ $article->libelle }}"
+                    <img loading="lazy" :src="selectedImage" alt="{{ $article->libelle }}"
                         class="w-full h-60 object-cover transition duration-300 group-hover:scale-105">
 
                     <!-- Overlay avec bouton "Voir détails" -->
@@ -372,7 +372,7 @@
                     <button type="button" @click="selectedImage = '{{ asset('storage/' . $article->image) }}'"
                             :class="{'border-indigo-500': selectedImage === '{{ asset('storage/' . $article->image) }}'}"
                             class="thumbnail rounded focus:outline-none">
-                        <img src="{{ asset('storage/' . $article->image) }}" alt="Default" class="w-full h-full">
+                        <img loading="lazy" src="{{ asset('storage/' . $article->image) }}" alt="Default" class="w-full h-full">
                     </button>
 
                     <!-- Images des variantes couleur -->
@@ -384,7 +384,7 @@
                         "
                             :class="{'border-indigo-500': selectedImage === '{{ asset('storage/' . $image->image) }}'}"
                             class="thumbnail rounded focus:outline-none">
-                        <img src="{{ asset('storage/' . $image->image) }}" alt="{{ $image->couleur->nom }}" class="w-full h-full">
+                        <img loading="lazy" src="{{ asset('storage/' . $image->image) }}" alt="{{ $image->couleur->nom }}" class="w-full h-full">
                     </button>
                     @endforeach
                 </div>
@@ -506,8 +506,7 @@
             {{ $articles->links() }}
         </div>
     </main>
-    <canvas id="topProductsChart" width="600" height="400" ></canvas>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
     <script>
         function appData() {
@@ -552,66 +551,6 @@
                 }
             };
         }
-
-
-        //pour le graphe 
-       const labels = @json($labels);
-        const data = @json($data);
-
-        const ctx = document.getElementById('topProductsChart').getContext('2d');
-
-        const chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Quantité vendue',
-                    data: data,
-                    backgroundColor: 'rgba(99, 102, 241, 0.7)', // Indigo 500 (plus pro)
-                    borderColor: 'rgba(79, 70, 229, 1)', // Indigo 600
-                    borderWidth: 1,
-                    barThickness: 25, // Minceur des barres
-                    maxBarThickness: 30, // Limite max
-                    borderRadius: 6 // Coins arrondis
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        backgroundColor: '#4f46e5',
-                        titleColor: '#fff',
-                        bodyColor: '#fff'
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            font: {
-                                size: 12
-                            }
-                        },
-                        barPercentage: 0.6, // Largeur relative des barres (0.0 - 1.0)
-                        categoryPercentage: 0.1 // Espace occupé par groupe (0.0 - 1.0)
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1,
-                            font: {
-                                size: 12
-                            }
-                        }
-                    }
-                }
-            }
-        });
     </script>
 </body>
 </html>

@@ -286,5 +286,67 @@
             </div>
         </div>
     </div>
+        <canvas id="topProductsChart" class="bg-gray-400" width="600" height="400" ></canvas>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+        //pour le graphe 
+       const labels = <?php echo json_encode($labels, 15, 512) ?>;
+        const data = <?php echo json_encode($data, 15, 512) ?>;
+
+        const ctx = document.getElementById('topProductsChart').getContext('2d');
+
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Quantité vendue',
+                    data: data,
+                    backgroundColor: 'rgba(99, 102, 241, 0.7)', // Indigo 500 (plus pro)
+                    borderColor: 'rgba(79, 70, 229, 1)', // Indigo 600
+                    borderWidth: 1,
+                    barThickness: 25, // Minceur des barres
+                    maxBarThickness: 30, // Limite max
+                    borderRadius: 6 // Coins arrondis
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#4f46e5',
+                        titleColor: '#fff',
+                        bodyColor: '#fff'
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        },
+                        barPercentage: 0.6, // Largeur relative des barres (0.0 - 1.0)
+                        categoryPercentage: 0.1 // Espace occupé par groupe (0.0 - 1.0)
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+      </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app-admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\pc\Desktop\Projet\pfe\authentification\resources\views/admin/dashboard.blade.php ENDPATH**/ ?>

@@ -27,6 +27,12 @@
             </div>
         </div>
     </x-slot>
+    @if (session('error'))
+    <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+        {{ session('error') }}
+    </div>
+@endif
+
 
     <div class="bg-gray-50 py-8">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">

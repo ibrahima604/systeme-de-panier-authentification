@@ -83,10 +83,10 @@ $articleEnRupture = Article::where('quantite', '<', 10)
 
 $dernieresCommandes = Commande::with('user', 'lignes')
     ->latest()
-    ->take(3)
+    ->take(2)
     ->get();
-$dernieresInscriptions = User::latest()->take(3)->get();
-$dernieresCommandesPourActivite = Commande::latest()->take(3)->get();
+$dernieresInscriptions = User::latest()->take(2)->get();
+$dernieresCommandesPourActivite = Commande::latest()->take(2)->get();
 
 
 $topProducts = DB::table('ligne_commandes as lc')
@@ -94,8 +94,20 @@ $topProducts = DB::table('ligne_commandes as lc')
     ->select('a.id', 'a.libelle', 'a.image', DB::raw('SUM(lc.quantite_commande) as total_vendu'))
     ->groupBy('a.id', 'a.libelle', 'a.image')
     ->orderByDesc('total_vendu')
-    ->limit(3)
+    ->limit(2)
     ->get();
+
+    // Ajout de la logique topProducts ici
+        $topProduct = DB::table('ligne_commandes as lc')
+            ->join('articles as a', 'lc.article_id', '=', 'a.id')
+            ->select('a.libelle', DB::raw('SUM(lc.quantite_commande) as total_vendu'))
+            ->groupBy('a.libelle')
+            ->orderByDesc('total_vendu')
+            ->limit(10)
+            ->get();
+
+        $labels = $topProduct->pluck('libelle');
+        $data = $topProduct->pluck('total_vendu');
  
 
 
@@ -106,7 +118,7 @@ $topProducts = DB::table('ligne_commandes as lc')
         return view('admin.dashboard',compact('NbrCommande','revenuDuJour','stock',
         'variation','varianteNbrCommande','variationClient',
         'clients','articleEnRupture','dernieresCommandes',
-        'dernieresInscriptions','dernieresCommandesPourActivite','topProducts'));
+        'dernieresInscriptions','dernieresCommandesPourActivite','topProducts','labels','data'));
     }
 
     /**

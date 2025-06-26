@@ -187,7 +187,7 @@
                                                     class="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-md overflow-hidden">
                                                     @if ($ligne->image)
                                                         <img src="{{ asset('storage/' . $ligne->image) }}"
-                                                            alt="{{ $ligne->article->nom }}"
+                                                            alt="{{ $ligne->article->libelle }}"
                                                             class="w-full h-full object-cover" />
                                                     @else
                                                         <div
@@ -198,7 +198,7 @@
                                                 </div>
                                                 <div class="ml-4 flex-1">
                                                     <h4 class="text-sm font-medium text-gray-900">
-                                                        {{ $ligne->article->nom }}</h4>
+                                                        {{ $ligne->article->libelle}}</h4>
                                                     <p class="text-sm text-gray-500 mt-1">Référence:
                                                         {{ $ligne->article->id }}</p>
                                                     <div class="mt-2 flex items-center justify-between">
