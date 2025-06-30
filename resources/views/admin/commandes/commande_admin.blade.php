@@ -51,7 +51,27 @@
                     @forelse ($commandes as $commande)
                         <tr class="border-t hover:bg-gray-50">
                             <td class="px-6 py-4 font-medium text-gray-800">{{ $commande->id }}</td>
-                            <td class="px-6 py-4">{{ $commande->user->prenom }} {{ $commande->user->nom }}</td>
+                           <td class="px-6 py-4">
+    @if ($commande->user)
+        @php
+            $prenom = $commande->user->prenom;
+            $nom = $commande->user->nom;
+        @endphp
+
+        @if ($prenom && $nom)
+            {{ $prenom }} {{ $nom }}
+        @elseif ($prenom)
+            {{ $prenom }}
+        @elseif ($nom)
+            {{ $nom }}
+        @else
+            <em>Nom non renseigné</em>
+        @endif
+    @else
+        <em>Utilisateur introuvable</em>
+    @endif
+</td>
+
                             <td class="px-6 py-4">{{ $commande->created_at->format('d/m/Y H:i') }}</td>
                             <td class="px-6 py-4">
                                 @php

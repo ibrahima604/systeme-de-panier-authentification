@@ -17,7 +17,11 @@ class AdminCommandeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Commande::with(['user', 'lignes.article']);
+        $query = Commande::with(['user', 'lignes.article'])
+    ->whereHas('user', function ($q) {
+        $q->whereNull('deleted_at'); // Ne garder que les utilisateurs non supprimés
+    });
+
 
         // Filtres
         if ($request->has('status') && $request->status != '') {

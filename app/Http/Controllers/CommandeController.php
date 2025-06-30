@@ -18,6 +18,7 @@ use App\Notifications\FactureGeneree;
 use App\Mail\CommandeSupprimeeMail;
 
 
+
 class CommandeController extends Controller
 {
     /**
@@ -107,16 +108,16 @@ public function store(Request $request)
         try {
             Mail::to($commande->user->email)->send(new ConfirmationCommandeMail($commande, $total));
         } catch (\Exception $e) {
-            \Log::error('Erreur lors de l’envoi de l’email : ' . $e->getMessage());
+            die('Erreur lors de l’envoi de l’email : ' . $e->getMessage());
             // Pas d'interruption
         }
 
         // 6. Redirection vers page de succès
-        return redirect()->route('commande.success')->with('success', '🎉 Merci pour votre commande ! Un e-mail de confirmation vous a été envoyé.');
+        return redirect()->route('commande.success')->with('success', 'Merci pour votre commande ! Un e-mail de confirmation vous a été envoyé.');
 
     } catch (\Exception $e) {
         DB::rollBack();
-        \Log::error('Erreur de commande : ' . $e->getMessage());
+       
 
         // Gestion d'erreur personnalisée
         return back()->with('error', $this->getTriggerMessage($e));
@@ -175,25 +176,27 @@ private function getTriggerMessage(\Exception $e): string
 
 public function commandesClient($id)
 {
-    $user = User::findOrFail($id);
-    // Récupérer toutes les commandes, y compris les soft deleted
-   $commandes = $user->commande()
+    // Récupérer uniquement les utilisateurs non supprimés
+    $user = User::whereNull('deleted_at')->findOrFail($id);
 
-    ->with('lignes')
-    ->orderBy('created_at', 'desc') // tri décroissant par date de création
-    ->get();
+    // Récupérer uniquement les commandes de cet utilisateur
+    $commandes = Commande::where('user_id', $user->id)
+        ->with('lignes')
+        ->orderBy('created_at', 'desc')
+        ->get();
 
-
+    // Calcul du total par commande
     foreach ($commandes as $commande) {
         $totalCommande = 0;
         foreach ($commande->lignes as $ligne) {
             $totalCommande += $ligne->quantite_commande * $ligne->prix;
         }
-        $commande->total = $totalCommande; // Ajout dynamique
+        $commande->total = $totalCommande;
     }
 
     return view('commandes.commandes-client', compact('commandes'));
 }
+
 
 public function show($id)
 {
@@ -244,7 +247,7 @@ public function toggleStatus($id)
         try {
             Mail::to($commande->user->email)->send(new CommandeAnnuleeMail($commande));
         } catch (\Exception $e) {
-            \Log::error("Erreur envoi mail annulation commande: " . $e->getMessage());
+            die("Erreur envoi mail annulation commande: " . $e->getMessage());
         }
 
         return redirect()->route('commandes.client', auth()->id())

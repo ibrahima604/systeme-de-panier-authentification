@@ -57,7 +57,6 @@ Route::get('/commandes/{id}', [CommandeController::class, 'show'])->name('client
 Route::delete('/commandes/{id}',[CommandeController::class,'destroy'])->name('commande.delete');
 Route::patch('/commande/toggle-status/{id}', [CommandeController::class, 'toggleStatus'])->name('commande.toggleStatus');
 Route::get('/commande/{id}/facture', [CommandeController::class, 'generateFacture'])->name('commande.facture');
-Route::get('/facture', [FactureController::class, 'generate']);
 Route::get('/support/contact',[SupportController::class,'index'] )->name('support.contact');
 Route::post('/support/message', [SupportController::class, 'envoyerMessage'])
     ->name('support.message');
