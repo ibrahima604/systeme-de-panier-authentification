@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\ConfirmationCommandeMail;
 use Illuminate\Http\Request;
 use App\Mail\CommandeAnnuleeMail;
-use App\Mail\CommandeReactiveeMail;
 use Barryvdh\DomPDF\Facade\Pdf;
+
 use App\Notifications\FactureGeneree;
 use App\Mail\CommandeSupprimeeMail;
 
@@ -263,7 +263,7 @@ public function generateFacture($id)
     $commande = Commande::with(['lignes.article', 'user'])->findOrFail($id);
 
     // Vérification d'autorisation
-    if (Auth::id() !== $commande->user_id && !Auth::user()->isAdmin()) {
+    if (Auth::id() !== $commande->user_id && Auth::user()->email!=config('admin.email')) {
         abort(403);
     }
 
@@ -289,12 +289,5 @@ public function generateFacture($id)
     // Retourner le téléchargement direct
     return $pdf->download('facture-' . $commande->id . '.pdf');
 }
-
-
-
-
-
-
-
 
 }
